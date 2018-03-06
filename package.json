@@ -1,0 +1,16 @@
+{
+  "name": "dead-simple-event-emmiter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "emitter.js",
+  "scripts": {
+    "roll": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "rollup": "^0.56.4"
+  }
+}

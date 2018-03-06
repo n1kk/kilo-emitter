@@ -1,0 +1,15 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es3",
+    "module": "none",
+    "outDir": "./",
+    "declaration": true,
+    "declarationDir": "./",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true
+  },
+  "files": ["machina.ts", "emitter.ts"]
+}
