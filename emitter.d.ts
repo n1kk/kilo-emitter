@@ -1,4 +1,4 @@
-declare class Emitter {
+export declare class Emitter {
     static extend(target: object): Emitter;
     private _evt;
     private _ctx;
