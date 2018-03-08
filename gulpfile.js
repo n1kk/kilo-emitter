@@ -8,7 +8,7 @@ const uglify = require('gulp-uglify');
 const sourcemaps = require('gulp-sourcemaps');
 const filter = require('gulp-filter');
 const rename = require('gulp-rename');
-const uglify_es = require('gulp-uglify-es');
+const uglify_es = require('gulp-uglify-es').default;
 const del = require('del');
 
 const prettyBytes = require('pretty-bytes');
@@ -35,7 +35,9 @@ function build_browser() {
 	const f = filter(['**/*.js'], {restore: true});
 
 	let code = fs.readFileSync(inFile, 'utf8')
-	fs.writeFileSync('_' + inFile, code.replace('export ', ''), 'utf8')
+	fs.writeFileSync('_' + inFile,
+		code.replace('export ', '').replace('default ', ''),
+		'utf8')
 
 	let pipe = gulp.src('_' + inFile)
 		.pipe(sourcemaps.init())
@@ -72,6 +74,12 @@ function build_node() {
 		//.pipe(rename({suffix: '.es3'}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(outDir))
+
+		.pipe(f)
+		.pipe(uglify_es())
+		.pipe(rename({suffix: '.min'}))
+		.pipe(gulp.dest(outDir))
+
 }
 
 function build_es6() {
@@ -86,15 +94,20 @@ function build_es6() {
 		.pipe(rename({suffix: '.es6'}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(outDir))
+
+		.pipe(f)
+		.pipe(uglify_es())
+		.pipe(rename({suffix: '.min'}))
+		.pipe(gulp.dest(outDir))
 }
 
-function report() {
+function report(cb) {
 	let data = [['Name', 'Size', 'Gzip']],
 		config = { columns: {
 			0: {alignment: 'left'},
 			1: {alignment: 'right'},
 			2: {alignment: 'right'}
-		}};
+		}, drawHorizontalLine: (i, s) => i<2||i==s};
 	fs.readdirSync(outDir)
 		.filter(name => !name.match(/\.map|\.d\.ts/))
 		.forEach(name => {
@@ -106,16 +119,15 @@ function report() {
 				prettyBytes(gzipSize.sync(fs.readFileSync(fullPath, 'utf8')))
 			])
 		})
-	console.log(table.table(data, config))
+	setTimeout(() => {
+		console.log(table.table(data, config))
+	}, 100)
+	cb && cb()
 }
 
 gulp.task('build_browser', build_browser);
 
 let dist = gulp.series(clean, build_browser, build_node, build_es6, report);
-gulp.task('dist', function () {
-	let res = dist()
-	report()
-	return res
-});
+gulp.task('dist', dist);
 
 gulp.task('default', build_browser);

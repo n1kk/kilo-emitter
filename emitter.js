@@ -1,14 +1,31 @@
 export class Emitter {
     static extend(target) {
-        return new Emitter(target);
+        let i, j, keys, emitter = new Emitter(target), bases = [emitter, Emitter.prototype];
+        for (j = 0; j < bases.length; j++) {
+            keys = Object.getOwnPropertyNames(bases[j] || {});
+            for (i = 0; i < keys.length; i++) {
+                target[keys[i]] = bases[j][keys[i]];
+            }
+        }
+        return target;
     }
     constructor(target) {
         this._evt = {};
         this._ctx = target || this;
     }
     on(event, listener) {
-        let listeners = this._evt[event] || (this._evt[event] = []);
-        listeners.push(listener);
+        if (listener) {
+            let i, listeners;
+            if (listeners = this._evt[event]) {
+                if ((i = listeners.indexOf(listener)) > -1) {
+                    listeners.splice(i, 1);
+                }
+                listeners.push(listener);
+            }
+            else {
+                this._evt[event] = [listener];
+            }
+        }
         return this;
     }
     once(event, listener) {
@@ -18,30 +35,32 @@ export class Emitter {
         });
     }
     off(event, listener) {
-        let n = arguments.length;
+        let i, listeners, n = arguments.length;
         if (n === 0) {
             this._evt = {};
         }
         else if (n === 1) {
             delete this._evt[event];
         }
-        else if (n === 1) {
-            let listeners = this._evt[event], i = listeners ? listeners.indexOf(listener) : -1;
-            if (i > -1)
+        else if (n === 2) {
+            listeners = this._evt[event];
+            i = listeners ? listeners.indexOf(listener) : -1;
+            if (i > -1) {
                 listeners.splice(i, 1);
+            }
         }
         return this;
     }
     emit(event) {
-        let listeners = this._evt[event];
+        let i, count, args, listeners = this._evt[event];
         if (listeners && listeners.length > 0) {
             listeners = listeners.slice();
-            let l = listeners.length, args = arguments.length > 1
+            count = listeners.length;
+            args = arguments.length > 1
                 ? [].slice.call(arguments, 1)
                 : [];
-            for (let i = 0; i < l; i++) {
+            for (i = 0; i < count; i++)
                 listeners[i].apply(this._ctx, args);
-            }
         }
         return this;
     }
