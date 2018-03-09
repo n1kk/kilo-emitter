@@ -5,31 +5,30 @@ export class Emitter {
   static extend<T extends object>(target: T): T & Emitter {
     let i, emitter:Emitter, keys;
     if (target && typeof target === 'object') {
-      emitter = new Emitter(target);
+      emitter = new Emitter();
       //keys = Emitter._n(Emitter.prototype).concat(Emitter._n(emitter));
       /*keys = ['_evt','_ctx','on','off','once','emit','triggers'];
        for (i = 0; i < 7; i++) {
          (<any>target)[keys[i]] = (<any>emitter)[keys[i]]
        }*/
-        ['_evt','_ctx','on','off','once','emit','triggers']
+        ['_evt','on','off','once','emit','triggers']
           .forEach(method => {(<any>target)[method] = (<any>emitter)[method]})
     }
     return <T & Emitter>target
   }
 
   private _evt: { [key: string]: Function[] }
-  private _ctx: object
 
-  constructor(target: object) {
+  constructor() {
     this._evt = {}
-    this._ctx = target || this
   }
 
-  public on(event: string, listener: Function) {
+  public on(event: string, listener: Function, context?: object) {
     let listeners, events = this._evt;
     if (event && listener) {
       if (listeners = events[event]) {
         // check and remove listener if it is already present
+        (<any>listener)._ctx = context
         this.off(event, listener)
         listeners.push(listener)
       } else {
@@ -40,10 +39,11 @@ export class Emitter {
     return this
   }
 
-  public once(event: string, listener: Function) {
+  public once(event: string, listener: Function, context?: object) {
+    // TODO: redo this because off would not work with wrappers, and make test fot that
     return listener ? this.on(event, function selfRemove() {
       this.off(event, selfRemove)
-      listener.apply(this, arguments)
+      listener.apply(context, arguments)
     }) : this
   }
 

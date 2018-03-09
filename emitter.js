@@ -2,20 +2,20 @@ export class Emitter {
     static extend(target) {
         let i, emitter, keys;
         if (target && typeof target === 'object') {
-            emitter = new Emitter(target);
-            ['_evt', '_ctx', 'on', 'off', 'once', 'emit', 'triggers']
+            emitter = new Emitter();
+            ['_evt', 'on', 'off', 'once', 'emit', 'triggers']
                 .forEach(method => { target[method] = emitter[method]; });
         }
         return target;
     }
-    constructor(target) {
+    constructor() {
         this._evt = {};
-        this._ctx = target || this;
     }
-    on(event, listener) {
+    on(event, listener, context) {
         let listeners, events = this._evt;
         if (event && listener) {
             if (listeners = events[event]) {
+                listener._ctx = context;
                 this.off(event, listener);
                 listeners.push(listener);
             }
@@ -26,10 +26,10 @@ export class Emitter {
         }
         return this;
     }
-    once(event, listener) {
+    once(event, listener, context) {
         return listener ? this.on(event, function selfRemove() {
             this.off(event, selfRemove);
-            listener.apply(this, arguments);
+            listener.apply(context, arguments);
         }) : this;
     }
     off(event, listener) {
