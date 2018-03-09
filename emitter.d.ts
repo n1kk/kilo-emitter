@@ -7,5 +7,5 @@ export declare class Emitter {
     once(event: string, listener: Function): this;
     off(event: string, listener: Function): this;
     emit(event: string): this;
-    hasListeners(event: string, listener: Function): boolean;
+    triggers(event: string, listener: Function): boolean;
 }

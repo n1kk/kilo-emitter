@@ -1,11 +1,10 @@
 export class Emitter {
     static extend(target) {
-        let i, j, keys, emitter = new Emitter(target), bases = [emitter, Emitter.prototype];
-        for (j = 0; j < bases.length; j++) {
-            keys = Object.getOwnPropertyNames(bases[j] || {});
-            for (i = 0; i < keys.length; i++) {
-                target[keys[i]] = bases[j][keys[i]];
-            }
+        let i, emitter, keys;
+        if (target && typeof target === 'object') {
+            emitter = new Emitter(target);
+            ['_evt', '_ctx', 'on', 'off', 'once', 'emit', 'triggers']
+                .forEach(method => { target[method] = emitter[method]; });
         }
         return target;
     }
@@ -14,63 +13,74 @@ export class Emitter {
         this._ctx = target || this;
     }
     on(event, listener) {
-        if (listener) {
-            let i, listeners;
-            if (listeners = this._evt[event]) {
-                if ((i = listeners.indexOf(listener)) > -1) {
-                    listeners.splice(i, 1);
-                }
+        let listeners, events = this._evt;
+        if (event && listener) {
+            if (listeners = events[event]) {
+                this.off(event, listener);
                 listeners.push(listener);
             }
             else {
-                this._evt[event] = [listener];
+                listeners = [listener];
             }
+            events[event] = listeners;
         }
         return this;
     }
     once(event, listener) {
-        return this.on(event, function selfRemove() {
+        return listener ? this.on(event, function selfRemove() {
             this.off(event, selfRemove);
             listener.apply(this, arguments);
-        });
+        }) : this;
     }
     off(event, listener) {
-        let i, listeners, n = arguments.length;
-        if (n === 0) {
+        let i, listeners, argNum = arguments.length, events = this._evt;
+        if (argNum === 0) {
             this._evt = {};
         }
-        else if (n === 1) {
-            delete this._evt[event];
+        else if (argNum === 1) {
+            delete events[event];
         }
-        else if (n === 2) {
-            listeners = this._evt[event];
+        else if (argNum === 2) {
+            listeners = events[event];
             i = listeners ? listeners.indexOf(listener) : -1;
             if (i > -1) {
                 listeners.splice(i, 1);
+                if (!listeners.length)
+                    delete events[event];
             }
         }
         return this;
     }
     emit(event) {
-        let i, count, args, listeners = this._evt[event];
-        if (listeners && listeners.length > 0) {
+        let i, num, args = arguments, listeners = this._evt[event];
+        if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
-            count = listeners.length;
-            args = arguments.length > 1
-                ? [].slice.call(arguments, 1)
+            args = args.length > 1
+                ? [].slice.call(args, 1)
                 : [];
-            for (i = 0; i < count; i++)
+            for (i = 0; i < num; i++)
                 listeners[i].apply(this._ctx, args);
         }
         return this;
     }
-    hasListeners(event, listener) {
-        let listeners = this._evt[event];
-        return (listeners)
-            ? (arguments.length > 1)
-                ? listeners.indexOf(listener) > -1
-                : true
-            : false;
+    triggers(event, listener) {
+        let listeners, argsNum = arguments.length, events = this._evt;
+        if (argsNum) {
+            if (listeners = events[event]) {
+                if (argsNum > 1) {
+                    return listeners.indexOf(listener) > -1;
+                }
+                else {
+                    return true;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return !!Object.getOwnPropertyNames(events).length;
+        }
     }
 }
 //# sourceMappingURL=emitter.js.map

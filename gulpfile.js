@@ -11,7 +11,7 @@ const rename = require('gulp-rename');
 const uglify_es = require('gulp-uglify-es').default;
 const del = require('del');
 
-const prettyBytes = require('pretty-bytes');
+const prettySize = require('prettysize');
 const gzipSize = require('gzip-size');
 const table = require('table');
 
@@ -102,21 +102,24 @@ function build_es6() {
 }
 
 function report(cb) {
-	let data = [['Name', 'Size', 'Gzip']],
+	let data = [['Name', 'Bytes', 'Gzip', ' %']],
 		config = { columns: {
 			0: {alignment: 'left'},
 			1: {alignment: 'right'},
 			2: {alignment: 'right'}
 		}, drawHorizontalLine: (i, s) => i<2||i==s};
 	fs.readdirSync(outDir)
-		.filter(name => !name.match(/\.map|\.d\.ts/))
+		.filter(name => name.match(/\.js$/))
 		.forEach(name => {
 			let fullPath = path.resolve(__dirname, outDir, name)
-			let stats = fs.lstatSync(fullPath)
+			let size, gzip, stats = fs.lstatSync(fullPath)
 			data.push([
 				name,
-				prettyBytes(stats.size),
-				prettyBytes(gzipSize.sync(fs.readFileSync(fullPath, 'utf8')))
+				size = stats.size,
+				//prettySize(stats.size, {one: true/*, places: 2*/}),
+        gzip = gzipSize.sync(fs.readFileSync(fullPath, 'utf8')),
+				//prettySize(gzipSize.sync(fs.readFileSync(fullPath, 'utf8')), {one: true/*, places: 2*/})
+        (100*gzip/size >> 0) + '%'
 			])
 		})
 	setTimeout(() => {

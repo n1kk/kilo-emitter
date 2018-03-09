@@ -47,7 +47,7 @@ var Emitter = (function () {
         }
         return this;
     };
-    Emitter.prototype.hasListeners = function (event, listener) {
+    Emitter.prototype.triggers = function (event, listener) {
         var listeners = this._evt[event];
         return (listeners)
             ? (arguments.length > 1)
