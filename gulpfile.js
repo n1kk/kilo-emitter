@@ -36,7 +36,10 @@ function build_browser() {
 
 	let code = fs.readFileSync(inFile, 'utf8')
 	fs.writeFileSync('_' + inFile,
-		code.replace('export ', '').replace('default ', ''),
+		code
+      .replace(/export class/g, 'class')
+      .replace(/export interface/g, 'interface')
+      .replace(/export default\s/g, ''),
 		'utf8')
 
 	let pipe = gulp.src('_' + inFile)
@@ -90,7 +93,9 @@ function build_es6() {
 			target: "es2015",
 			module: "es6",
 		})))
-
+  // $env:Path += ";"+ (Get-Item -Path ".\" -Verbose).FullName +"\node_modules\.bin"
+  // set PATH=%PATH%;%cd%\node_modules\.bin
+  // export PATH=$PATH:$(pwd)/node_modules/.bin
 		.pipe(rename({suffix: '.es6'}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(outDir))
@@ -101,13 +106,25 @@ function build_es6() {
 		.pipe(gulp.dest(outDir))
 }
 
+function build_browser_tests(callback) {
+  var myConfig = Object.create(webpackConfig);
+
+  webpack(myConfig, function(err, stats) {
+    if(err) throw new gutil.PluginError("webpack:build", err);
+    gutil.log("[webpack:build]", stats.toString({
+      colors: true
+    }));
+    callback();
+  });
+}
+
 function report(cb) {
 	let data = [['Name', 'Bytes', 'Gzip', ' %']],
 		config = { columns: {
 			0: {alignment: 'left'},
 			1: {alignment: 'right'},
 			2: {alignment: 'right'}
-		}, drawHorizontalLine: (i, s) => i<2||i==s};
+		}, drawHorizontalLine: (i, s) => i<2||i===s };
 	fs.readdirSync(outDir)
 		.filter(name => name.match(/\.js$/))
 		.forEach(name => {

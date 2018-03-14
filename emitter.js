@@ -3,19 +3,19 @@ export class Emitter {
         let i, emitter, keys;
         if (target && typeof target === 'object') {
             emitter = new Emitter();
-            ['_evt', 'on', 'off', 'once', 'emit', 'triggers']
-                .forEach(method => { target[method] = emitter[method]; });
+            ['$evt', 'on', 'off', 'once', 'emit', 'triggers']
+                .forEach((method) => { target[method] = emitter[method]; });
         }
         return target;
     }
     constructor() {
-        this._evt = {};
+        this.$evt = {};
     }
     on(event, listener, context) {
-        let listeners, events = this._evt;
+        let listeners, events = this.$evt;
         if (event && listener) {
+            listener.$ctx = context;
             if (listeners = events[event]) {
-                listener._ctx = context;
                 this.off(event, listener);
                 listeners.push(listener);
             }
@@ -27,20 +27,21 @@ export class Emitter {
         return this;
     }
     once(event, listener, context) {
-        return listener ? this.on(event, function selfRemove() {
-            this.off(event, selfRemove);
-            listener.apply(context, arguments);
-        }) : this;
+        if (event && listener) {
+            listener.$once = true;
+            this.on(event, listener);
+        }
+        return this;
     }
     off(event, listener) {
-        let i, listeners, argNum = arguments.length, events = this._evt;
+        let i, listeners, argNum = arguments.length, events = this.$evt;
         if (argNum === 0) {
-            this._evt = {};
+            this.$evt = {};
         }
         else if (argNum === 1) {
             delete events[event];
         }
-        else if (argNum === 2) {
+        else {
             listeners = events[event];
             i = listeners ? listeners.indexOf(listener) : -1;
             if (i > -1) {
@@ -52,19 +53,25 @@ export class Emitter {
         return this;
     }
     emit(event) {
-        let i, num, args = arguments, listeners = this._evt[event];
+        let i, listener, num, args = arguments, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
             args = args.length > 1
                 ? [].slice.call(args, 1)
                 : [];
-            for (i = 0; i < num; i++)
-                listeners[i].apply(this._ctx, args);
+            for (i = 0; i < num; i++) {
+                listener = listeners[i];
+                listener.apply(listener.$ctx, args);
+                if (listener.$once) {
+                    this.off(event, listener);
+                    delete listener.$once;
+                }
+            }
         }
         return this;
     }
     triggers(event, listener) {
-        let listeners, argsNum = arguments.length, events = this._evt;
+        let listeners, argsNum = arguments.length, events = this.$evt;
         if (argsNum) {
             if (listeners = events[event]) {
                 if (argsNum > 1) {

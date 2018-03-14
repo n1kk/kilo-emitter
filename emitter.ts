@@ -1,3 +1,8 @@
+export interface Listener extends Function {
+  $ctx ?: object;
+  $once ?: boolean;
+}
+
 export class Emitter {
 
   //private static _n = Object.getOwnPropertyNames
@@ -6,54 +11,49 @@ export class Emitter {
     let i, emitter:Emitter, keys;
     if (target && typeof target === 'object') {
       emitter = new Emitter();
-      //keys = Emitter._n(Emitter.prototype).concat(Emitter._n(emitter));
-      /*keys = ['_evt','_ctx','on','off','once','emit','triggers'];
-       for (i = 0; i < 7; i++) {
-         (<any>target)[keys[i]] = (<any>emitter)[keys[i]]
-       }*/
-        ['_evt','on','off','once','emit','triggers']
-          .forEach(method => {(<any>target)[method] = (<any>emitter)[method]})
+      ['$evt','on','off','once','emit','triggers']
+        .forEach((method: keyof Emitter) => { (<any>target)[method] = emitter[method] })
     }
     return <T & Emitter>target
   }
 
-  private _evt: { [key: string]: Function[] }
+  private $evt: { [key: string]: Listener[] }
 
   constructor() {
-    this._evt = {}
+    this.$evt = {}
   }
 
-  public on(event: string, listener: Function, context?: object) {
-    let listeners, events = this._evt;
+  public on(event: string, listener: Listener, context?: object) {
+    let listeners, events = this.$evt;
     if (event && listener) {
+      listener.$ctx = context
       if (listeners = events[event]) {
         // check and remove listener if it is already present
-        (<any>listener)._ctx = context
         this.off(event, listener)
         listeners.push(listener)
       } else {
-        listeners = <Function[]>[listener]
+        listeners = <Listener[]>[listener]
       }
       events[event] = listeners
     }
     return this
   }
 
-  public once(event: string, listener: Function, context?: object) {
-    // TODO: redo this because off would not work with wrappers, and make test fot that
-    return listener ? this.on(event, function selfRemove() {
-      this.off(event, selfRemove)
-      listener.apply(context, arguments)
-    }) : this
+  public once(event: string, listener: Listener, context?: object) {
+    if (event && listener) {
+      listener.$once = true
+      this.on(event, listener)
+    }
+    return this
   }
 
   public off(event: string, listener: Function) {
-    let i, listeners, argNum = arguments.length, events = this._evt
+    let i, listeners, argNum = arguments.length, events = this.$evt
     if (argNum === 0) {
-      this._evt = {}
+      this.$evt = {}
     } else if (argNum === 1) {
       delete events[event]
-    } else if (argNum === 2) {
+    } else {
       listeners = events[event]
       i = listeners ? listeners.indexOf(listener) : -1
       if (i > -1) {
@@ -67,8 +67,8 @@ export class Emitter {
   }
 
   public emit(event: string) {
-    let i, num, args = arguments,
-      listeners = this._evt[event]
+    let i, listener, num, args = arguments,
+      listeners = this.$evt[event]
     if (listeners && (num = listeners.length)) {
       // get copy in case of mutations
       listeners = listeners.slice()
@@ -76,14 +76,20 @@ export class Emitter {
       args = args.length > 1
         ? [].slice.call(args, 1)
         : []
-      for (i = 0; i < num; i++)
-        listeners[i].apply(this._ctx, args)
+      for (i = 0; i < num; i++) {
+        listener = listeners[i]
+        listener.apply(listener.$ctx, args)
+        if (listener.$once) {
+          this.off(event, listener)
+          delete listener.$once
+        }
+      }
     }
     return this
   }
 
   public triggers(event: string, listener: Function): boolean {
-    let listeners, argsNum = arguments.length, events = this._evt
+    let listeners, argsNum = arguments.length, events = this.$evt
     if (argsNum) {
       if (listeners = events[event]) {
         if (argsNum > 1) {

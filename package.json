@@ -2,18 +2,38 @@
   "name": "dead-simple-event-emmiter",
   "version": "1.0.0",
   "description": "",
-  "main": "emitter.js",
+  "main": "dist/emitter.js",
+  "module": "dist/emitter.es6.js",
+  "browser": "dist/emitter.es3.js",
   "scripts": {
     "roll": "rollup -c",
+    "browserify": "browserify tests/node.js > tests/browser.js",
+    "testling1": "testling -x open",
+    "testling": "browserify tests/node.js | testling",
     "gulp": "gulp",
     "dist": "gulp dist",
     "cover": "istanbul cover node_modules/tape/bin/tape tests/node.js",
     "test": "node tests/node.js"
   },
+  "testling": {
+    "files": "tests/browser.js",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/22..latest",
+      "firefox/16..latest",
+      "safari/latest",
+      "opera/11.0..latest",
+      "iphone/6",
+      "ipad/6",
+      "android-browser/latest"
+    ]
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
+    "browserify": "^16.1.1",
+    "casperjs": "^1.1.4",
     "del": "^3.0.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-filter": "^5.1.0",
@@ -24,12 +44,14 @@
     "gulp-uglify-es": "^1.0.1",
     "gzip-size": "^4.1.0",
     "istanbul": "^0.4.5",
-    "mocha": "^5.0.3",
-    "nyc": "^11.4.1",
+    "phantomjs": "^2.1.7",
     "prettysize": "^1.1.0",
     "rollup": "^0.56.4",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^3.2.0",
+    "slimerjs": "^0.10.3",
     "table": "^4.0.3",
-    "tape": "^4.9.0",
     "typescript": "^2.7.2"
   }
 }

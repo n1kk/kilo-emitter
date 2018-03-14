@@ -82,7 +82,7 @@ test('running same tests for new emitter and extended object', function (t) {
       e.on('on4')
       t.notOk(e.triggers('on4'), m('should ignore if no listener passed'))
 
-      t.doesNotThrow(e.on, m('should not throw if no arguments passed'))
+      t.doesNotThrow(() => { e.on() }, m('should not throw if no arguments passed'))
 
       t.end()
     });
@@ -147,11 +147,15 @@ test('running same tests for new emitter and extended object', function (t) {
 
       e.on('off1', callbacks.cb1)
       e.off('off1', callbacks.cb1)
-      t.notOk(e.triggers('evt'), m('should not have listeners for event if events last one was removed directly'))
+      t.notOk(e.triggers('off1'), m('should not have listeners for event if events last one was removed directly'))
       t.notOk(e.triggers(), m('should not have listeners at all if last one was removed directly'))
 
       t.doesNotThrow(() => e.off('off1', () => {}), m('should not throw if nonexistent listener passed'))
       t.doesNotThrow(() => e.off('off2'), m('should not throw if nonexistent event passed'))
+
+      e.once('off2', callbacks.cb1)
+      e.off('off2', callbacks.cb1)
+      t.notOk(e.triggers('off1'), m('should remove listeners added with .once()'))
 
       t.end()
     });
@@ -165,9 +169,10 @@ test('running same tests for new emitter and extended object', function (t) {
       e.emit('emit2')
       t.equal(callbacks.called.reduce((c,n) => c + n), n, m('should invoke all listeners'))
 
-      e.on('emit1', callbacks.cb1)
+      let ctx = {context: true}
+      e.on('emit1', callbacks.cb1, ctx)
       e.emit('emit1', 'arg1', 'arg2')
-      t.equal(callbacks.last.context, e, m('should pass context to callback'))
+      t.equal(callbacks.last.context, ctx, m('should pass context to callback'))
       t.equal(callbacks.last.args[0], 'arg1', m('should pass arguments to callback'))
       t.equal(callbacks.last.args.length, 2, m('should pass all arguments to callback'))
 
@@ -202,7 +207,7 @@ test('running same tests for new emitter and extended object', function (t) {
       t.end()
     });
 
-    test(m('chainable tests'), function (t) {
+    test(m('common tests'), function (t) {
 
       let callbacks = data.chainable = genCallbacks(3)
 
@@ -212,6 +217,14 @@ test('running same tests for new emitter and extended object', function (t) {
       t.equals(e.off('ch1', callbacks.cb1), e, m('off(e, l) should return this for chaining'))
       t.equals(e.off('ch1'), e, m('off(e) should return this for chaining'))
       t.equals(e.off(), e, m('off() should return this for chaining'))
+
+      let call = method => (method) => method('asd', () => {})
+
+      t.throws(call(e.on), m('on() should throw if called from wrong context'))
+      t.throws(call(e.once), m('once() should throw if called from wrong context'))
+      t.throws(call(e.emit), m('emit() should throw if called from wrong context'))
+      t.throws(call(e.off), m('off() should throw if called from wrong context'))
+      t.throws(call(e.triggers), m('triggers() should throw if called from wrong context'))
 
       t.end()
     });
