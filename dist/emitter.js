@@ -1,4 +1,6 @@
-export class Emitter {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Emitter {
     static extend(target) {
         let i, emitter, keys;
         if (target && typeof target === 'object') {
@@ -96,4 +98,6 @@ export class Emitter {
         }
     }
 }
+exports.Emitter = Emitter;
+
 //# sourceMappingURL=emitter.js.map

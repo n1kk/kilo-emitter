@@ -23,14 +23,19 @@ export class Emitter {
     this.$evt = {}
   }
 
-  public on(event: string, listener: Listener, context?: object) {
+  public on(event: string, listener: Listener, context?: object, priority?:Boolean) {
     let listeners, events = this.$evt;
     if (event && listener) {
       listener.$ctx = context
       if (listeners = events[event]) {
         // check and remove listener if it is already present
-        this.off(event, listener)
-        listeners.push(listener)
+        this.off(event, listener);
+        //listeners[priority ? 'push' : 'unshift'](listener)
+        //(priority ? listeners.push : listeners.unshift)(listener)
+        if (priority)
+          listeners.unshift(listener)
+        else
+          listeners.push(listener)
       } else {
         listeners = <Listener[]>[listener]
       }
@@ -39,10 +44,10 @@ export class Emitter {
     return this
   }
 
-  public once(event: string, listener: Listener, context?: object) {
+  public once(event: string, listener: Listener, context?: object, priority?:Boolean) {
     if (event && listener) {
       listener.$once = true
-      this.on(event, listener)
+      this.on(event, listener, context, priority)
     }
     return this
   }
@@ -67,7 +72,7 @@ export class Emitter {
   }
 
   public emit(event: string) {
-    let i, listener, num, args = arguments,
+    let i, result, listener, num, args = arguments,
       listeners = this.$evt[event]
     if (listeners && (num = listeners.length)) {
       // get copy in case of mutations
@@ -78,10 +83,13 @@ export class Emitter {
         : []
       for (i = 0; i < num; i++) {
         listener = listeners[i]
-        listener.apply(listener.$ctx, args)
+        result = listener.apply(listener.$ctx, args)
         if (listener.$once) {
           this.off(event, listener)
           delete listener.$once
+        }
+        if (result === false) {
+          break
         }
       }
     }

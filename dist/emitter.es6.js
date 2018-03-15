@@ -96,4 +96,5 @@ export class Emitter {
         }
     }
 }
-//# sourceMappingURL=emitter.js.map
+
+//# sourceMappingURL=emitter.es6.js.map

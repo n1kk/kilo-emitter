@@ -8,6 +8,7 @@ const uglify = require('gulp-uglify');
 const sourcemaps = require('gulp-sourcemaps');
 const filter = require('gulp-filter');
 const rename = require('gulp-rename');
+const replace = require('gulp-replace');
 const uglify_es = require('gulp-uglify-es').default;
 const del = require('del');
 
@@ -34,22 +35,17 @@ function clean() {
 function build_browser() {
 	const f = filter(['**/*.js'], {restore: true});
 
-	let code = fs.readFileSync(inFile, 'utf8')
-	fs.writeFileSync('_' + inFile,
-		code
-      .replace(/export class/g, 'class')
-      .replace(/export interface/g, 'interface')
-      .replace(/export default\s/g, ''),
-		'utf8')
-
-	let pipe = gulp.src('_' + inFile)
+	let pipe = gulp.src(inFile)
 		.pipe(sourcemaps.init())
-		.pipe(rename(inFile))
+		.pipe(replace(/export class/g, 'class'))
+		.pipe(replace(/export interface/g, 'interface'))
+		.pipe(replace(/export default\s/g, ''))
 		.pipe(ts(Object.assign(baseTsConfig, {
 			target: "es3",
 			module: "none",
 			declaration: false
 		})))
+    .pipe(replace(/var Emitter = /g, 'window.Emitter = '))
 
 		.pipe(rename({suffix: '.es3'}))
 		.pipe(sourcemaps.write('.'))

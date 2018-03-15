@@ -7,7 +7,7 @@
   "browser": "dist/emitter.es3.js",
   "scripts": {
     "roll": "rollup -c",
-    "browserify": "browserify tests/node.js > tests/browser.js",
+    "bundle.tests": "browserify ./tests/browser.js > ./tests/browser.bundle.js && browserify ./tests/phantom.js > ./tests/phantom.bundle.js",
     "testling1": "testling -x open",
     "testling": "browserify tests/node.js | testling",
     "gulp": "gulp",
@@ -38,6 +38,7 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-filter": "^5.1.0",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.6.1",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-typescript": "^4.0.1",
     "gulp-uglify": "^3.0.0",
@@ -52,6 +53,8 @@
     "rollup-plugin-node-resolve": "^3.2.0",
     "slimerjs": "^0.10.3",
     "table": "^4.0.3",
-    "typescript": "^2.7.2"
+    "tape": "^4.9.0",
+    "typescript": "^2.7.2",
+    "webdriverio": "^4.12.0"
   }
 }

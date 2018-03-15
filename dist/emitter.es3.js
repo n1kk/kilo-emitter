@@ -1,18 +1,18 @@
-export class Emitter {
-    static extend(target) {
-        let i, emitter, keys;
+window.Emitter = (function () {
+    function Emitter() {
+        this.$evt = {};
+    }
+    Emitter.extend = function (target) {
+        var i, emitter, keys;
         if (target && typeof target === 'object') {
             emitter = new Emitter();
             ['$evt', 'on', 'off', 'once', 'emit', 'triggers']
-                .forEach((method) => { target[method] = emitter[method]; });
+                .forEach(function (method) { target[method] = emitter[method]; });
         }
         return target;
-    }
-    constructor() {
-        this.$evt = {};
-    }
-    on(event, listener, context, priority) {
-        let listeners, events = this.$evt;
+    };
+    Emitter.prototype.on = function (event, listener, context, priority) {
+        var listeners, events = this.$evt;
         if (event && listener) {
             listener.$ctx = context;
             if (listeners = events[event]) {
@@ -28,16 +28,16 @@ export class Emitter {
             events[event] = listeners;
         }
         return this;
-    }
-    once(event, listener, context, priority) {
+    };
+    Emitter.prototype.once = function (event, listener, context, priority) {
         if (event && listener) {
             listener.$once = true;
             this.on(event, listener, context, priority);
         }
         return this;
-    }
-    off(event, listener) {
-        let i, listeners, argNum = arguments.length, events = this.$evt;
+    };
+    Emitter.prototype.off = function (event, listener) {
+        var i, listeners, argNum = arguments.length, events = this.$evt;
         if (argNum === 0) {
             this.$evt = {};
         }
@@ -54,9 +54,9 @@ export class Emitter {
             }
         }
         return this;
-    }
-    emit(event) {
-        let i, result, listener, num, args = arguments, listeners = this.$evt[event];
+    };
+    Emitter.prototype.emit = function (event) {
+        var i, result, listener, num, args = arguments, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
             args = args.length > 1
@@ -75,9 +75,9 @@ export class Emitter {
             }
         }
         return this;
-    }
-    triggers(event, listener) {
-        let listeners, argsNum = arguments.length, events = this.$evt;
+    };
+    Emitter.prototype.triggers = function (event, listener) {
+        var listeners, argsNum = arguments.length, events = this.$evt;
         if (argsNum) {
             if (listeners = events[event]) {
                 if (argsNum > 1) {
@@ -94,6 +94,8 @@ export class Emitter {
         else {
             return !!Object.getOwnPropertyNames(events).length;
         }
-    }
-}
-//# sourceMappingURL=emitter.js.map
+    };
+    return Emitter;
+}());
+
+//# sourceMappingURL=emitter.es3.js.map
