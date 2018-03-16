@@ -56,7 +56,11 @@ window.Emitter = (function () {
         return this;
     };
     Emitter.prototype.emit = function (event) {
-        var i, result, listener, num, args = arguments, listeners = this.$evt[event];
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var i, result, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
             args = args.length > 1

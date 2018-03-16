@@ -3,7 +3,7 @@ export interface Listener extends Function {
   $once ?: boolean;
 }
 
-export class Emitter {
+export default class Emitter {
 
   //private static _n = Object.getOwnPropertyNames
 
@@ -71,8 +71,8 @@ export class Emitter {
     return this;
   }
 
-  public emit(event: string) {
-    let i, result, listener, num, args = arguments,
+  public emit(event: string, ...args:any[]) {
+    let i, result, listener, num,
       listeners = this.$evt[event]
     if (listeners && (num = listeners.length)) {
       // get copy in case of mutations

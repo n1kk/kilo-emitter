@@ -57,8 +57,8 @@ class Emitter {
         }
         return this;
     }
-    emit(event) {
-        let i, result, listener, num, args = arguments, listeners = this.$evt[event];
+    emit(event, ...args) {
+        let i, result, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
             args = args.length > 1
@@ -98,6 +98,6 @@ class Emitter {
         }
     }
 }
-exports.Emitter = Emitter;
+exports.default = Emitter;
 
 //# sourceMappingURL=emitter.js.map

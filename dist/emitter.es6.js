@@ -1,4 +1,4 @@
-export class Emitter {
+export default class Emitter {
     static extend(target) {
         let i, emitter, keys;
         if (target && typeof target === 'object') {
@@ -55,8 +55,8 @@ export class Emitter {
         }
         return this;
     }
-    emit(event) {
-        let i, result, listener, num, args = arguments, listeners = this.$evt[event];
+    emit(event, ...args) {
+        let i, result, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
             args = args.length > 1
