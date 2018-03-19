@@ -1,11 +1,40 @@
-let chai = require('chai')
-import { expect, use } from 'chai';
-let mocha =  require('mocha')
-let Emitter = require("../Emitter")
+import { expect, use, assert, should as should_ } from 'chai';
+import 'mocha';
+import Emitter from '../Emitter';
+//let Emitter = require("../Emitter.ts")
+let should = should_()
 
 describe('Emitter class', () => {
 
-  it('should register a listener and emit', () => {
+  describe('integrity test', () => {
+
+    it('should initialize with "new" keyword', () => {
+      let em = new Emitter();
+      should.exist(em)
+    });
+
+    it('should initialize with "extend" method', () => {
+      let target = {field: 1}, extended = Emitter.extend(target)
+      should.exist(extended)
+      extended.should.equal(target)
+      Object.getOwnPropertyNames(Emitter.prototype)
+        .filter(m => m !== 'constructor')
+        .forEach((method:keyof Emitter) => {
+          should.exist(extended[method])
+        })
+      expect(target.field).to.equal(extended.field)
+    });
+
+    it('should should ignore non object targets', () => {
+      expect(Emitter.extend(null)).to.equal(null)
+      expect(Emitter.extend(undefined)).to.equal(undefined)
+      expect(Emitter.extend(<any>2)).to.equal(2)
+    });
+
+
+  })
+
+  /*it('should register a listener and emit', () => {
     let em = new Emitter(), called;
     em.on('a', () => called = true)
     em.emit('a')
@@ -80,7 +109,7 @@ describe('Emitter class', () => {
     em.emit('a')
 
     expect(called).to.equal(4);
-  });
+  });*/
 
 
 });

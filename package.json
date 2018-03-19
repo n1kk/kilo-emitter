@@ -7,9 +7,9 @@
   "browser": "dist/emitter.es3.js",
   "scripts": {
     "roll": "rollup -c",
-    "bundle.tests": "browserify ./tests/browser.js > ./tests/browser.bundle.js && browserify ./tests/phantom.js > ./tests/phantom.bundle.js",
+    "bundle.tests": "browserify ./test/browser.js > ./test/browser.bundle.js",
     "testling1": "testling -x open",
-    "testling": "browserify tests/node.js | testling",
+    "testling": "browserify test/node.js | testling",
     "gulp": "gulp",
     "dist": "gulp dist",
     "cover": "istanbul cover node_modules/tape/bin/tape tests/node.js",
@@ -31,7 +31,9 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "sinon": "^4.4.6"
+  },
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
