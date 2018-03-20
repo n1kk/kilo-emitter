@@ -65,9 +65,6 @@ var Emitter = (function () {
         var i, result, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
-            args = args.length > 1
-                ? [].slice.call(args, 1)
-                : [];
             for (i = 0; i < num; i++) {
                 listener = listeners[i];
                 result = listener.apply(listener.$ctx, args);

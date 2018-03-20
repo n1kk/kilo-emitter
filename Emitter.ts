@@ -52,7 +52,7 @@ export default class Emitter {
     return this
   }
 
-  public off(event: string, listener: Function) {
+  public off(event?: string, listener?: Function) {
     let i, listeners, argNum = arguments.length, events = this.$evt
     if (argNum === 0) {
       this.$evt = {}
@@ -71,16 +71,22 @@ export default class Emitter {
     return this;
   }
 
-  public emit(event: string, ...args:any[]) {
+  // for browser build ...args will be replaced with [].slice.call(arguments) for a smaller footprint
+  public emit(event: string /* IF NOT BROWSER */, ...args:any[] /**/) {
     let i, result, listener, num,
+      /* IF BROWSER
+      args = arguments,
+      /**/
       listeners = this.$evt[event]
     if (listeners && (num = listeners.length)) {
       // get copy in case of mutations
       listeners = listeners.slice()
       // skip slicing arguments if there's 1 or less to speed up
+      /* IF BROWSER
       args = args.length > 1
         ? [].slice.call(args, 1)
         : []
+      /**/
       for (i = 0; i < num; i++) {
         listener = listeners[i]
         result = listener.apply(listener.$ctx, args)
@@ -96,7 +102,7 @@ export default class Emitter {
     return this
   }
 
-  public triggers(event: string, listener: Function): boolean {
+  public triggers(event?: string, listener?: Function): boolean {
     let listeners, argsNum = arguments.length, events = this.$evt
     if (argsNum) {
       if (listeners = events[event]) {

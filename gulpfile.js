@@ -4,7 +4,9 @@ const path = require('path');
 const ts = require('gulp-typescript');
 
 const gulp = require('gulp');
+const browserify = require('browserify');
 const uglify = require('gulp-uglify');
+const save = require('gulp-save');
 const sourcemaps = require('gulp-sourcemaps');
 const filter = require('gulp-filter');
 const rename = require('gulp-rename');
@@ -12,10 +14,12 @@ const replace = require('gulp-replace');
 const uglify_es = require('gulp-uglify-es').default;
 const del = require('del');
 
+const source = require('vinyl-source-stream');
+const tsify = require("tsify");
+
 const prettySize = require('prettysize');
 const gzipSize = require('gzip-size');
 const table = require('table');
-
 
 const baseTsConfig = {
 	"declaration": true,
@@ -28,44 +32,56 @@ const inFile = 'emitter.ts'
 const filterNames = ['*.js']
 const outDir = 'dist'
 
+
 function clean() {
 	return del([ outDir ]);
 }
 
 function build_browser() {
-	const f = filter(['**/*.js'], {restore: true});
-
-	let pipe = gulp.src(inFile)
+  return gulp.src(inFile)
 		.pipe(sourcemaps.init())
-		.pipe(replace(/export class/g, 'class'))
+
+    // remove all exports to compile without module definition
+    .pipe(replace(/export class/g, 'class'))
 		.pipe(replace(/export interface/g, 'interface'))
 		.pipe(replace(/export default\s/g, ''))
-		.pipe(ts(Object.assign(baseTsConfig, {
+
+    // change defs to use browser optimizations
+    .pipe(replace(/IF NOT BROWSER \*\//g, ''))
+    .pipe(replace(/IF BROWSER/g, '*/'))
+
+    .pipe(ts(Object.assign(baseTsConfig, {
 			target: "es3",
 			module: "none",
 			declaration: false
 		})))
-    .pipe(replace(/var Emitter = /g, 'window.Emitter = '))
 
-		.pipe(rename({suffix: '.es3'}))
+    .pipe(save('compiled'))
+
+    .pipe(rename({suffix: '.var'}))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(outDir))
+    .pipe(filter(['**/*.js']))
+    .pipe(uglify())
+    .pipe(rename({suffix: '.min'}))
+    .pipe(gulp.dest(outDir))
+
+    .pipe(save.restore('compiled'))
+
+    .pipe(replace(/var Emitter = /g, 'window.Emitter = '))
+    .pipe(rename({suffix: '.es3'}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(outDir))
-
-		.pipe(f)
+		.pipe(filter(['**/*.js']))
 		.pipe(uglify())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest(outDir))
-
-	del('_' + inFile)
-
-	return pipe
 }
 
 function build_node() {
-	const f = filter(['**/*.js'], {restore: true});
 	return gulp.src(inFile)
-		.pipe(sourcemaps.init())
-		.pipe(ts(Object.assign(baseTsConfig, {
+    .pipe(sourcemaps.init())
+    .pipe(ts(Object.assign(baseTsConfig, {
 			target: "es2015",
 			module: "commonjs",
 		})))
@@ -74,7 +90,7 @@ function build_node() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(outDir))
 
-		.pipe(f)
+		.pipe(filter(['**/*.js']))
 		.pipe(uglify_es())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest(outDir))
@@ -82,10 +98,9 @@ function build_node() {
 }
 
 function build_es6() {
-	const f = filter(['**/*.js'], {restore: true});
 	return gulp.src(inFile)
 		.pipe(sourcemaps.init())
-		.pipe(ts(Object.assign(baseTsConfig, {
+    .pipe(ts(Object.assign(baseTsConfig, {
 			target: "es2015",
 			module: "es6",
 		})))
@@ -96,22 +111,24 @@ function build_es6() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(outDir))
 
-		.pipe(f)
+		.pipe(filter(['**/*.js']))
 		.pipe(uglify_es())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest(outDir))
 }
 
-function build_browser_tests(callback) {
-  var myConfig = Object.create(webpackConfig);
-
-  webpack(myConfig, function(err, stats) {
-    if(err) throw new gutil.PluginError("webpack:build", err);
-    gutil.log("[webpack:build]", stats.toString({
-      colors: true
-    }));
-    callback();
-  });
+function build_browser_tests() {
+  return browserify({
+    basedir: '.',
+    debug: true,
+    entries: ['test/Emitter.spec.ts'],
+    cache: {},
+    packageCache: {}
+  })
+    .plugin(tsify)
+    .bundle()
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest("test"));
 }
 
 function report(cb) {
@@ -143,7 +160,7 @@ function report(cb) {
 
 gulp.task('build_browser', build_browser);
 
-let dist = gulp.series(clean, build_browser, build_node, build_es6, report);
+let dist = gulp.series(clean, build_browser, build_node, build_es6, build_browser_tests, report);
 gulp.task('dist', dist);
 
 gulp.task('default', build_browser);

@@ -8,7 +8,7 @@ export default class Emitter {
     constructor();
     on(event: string, listener: Listener, context?: object, priority?: Boolean): this;
     once(event: string, listener: Listener, context?: object, priority?: Boolean): this;
-    off(event: string, listener: Function): this;
+    off(event?: string, listener?: Function): this;
     emit(event: string, ...args: any[]): this;
-    triggers(event: string, listener: Function): boolean;
+    triggers(event?: string, listener?: Function): boolean;
 }

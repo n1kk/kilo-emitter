@@ -1,6 +1,6 @@
 exports.config = {
   specs: [
-    './tests/**/*.spec.ts'
+    './test/**/*.spec.ts'
   ],
   exclude: [
     // 'path/to/excluded/files'
@@ -37,7 +37,7 @@ exports.config = {
 
   mochaOpts: {
     ui: 'bdd',
-    compilers: ['ts:ts-node/register', 'ignore-styles', 'jsdom-global/register'],
+    compilers: ['ts:ts-node/register'],
     requires: []
   },
 
