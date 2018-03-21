@@ -1,6 +1,7 @@
 exports.config = {
   specs: [
-    './test/**/*.spec.ts'
+    './test/**/*.spec.ts',
+    //'./test/**/*.spec.js',
   ],
   exclude: [
     // 'path/to/excluded/files'
@@ -34,11 +35,15 @@ exports.config = {
 
   framework: 'mocha',
   reporters: ['dot', 'spec', 'json', 'concise'],
+  reporterOptions: {
+    outputDir: './test/results',
+  },
+
 
   mochaOpts: {
     ui: 'bdd',
     compilers: ['ts:ts-node/register'],
-    requires: []
+    requires: ['jsdom-global/register']
   },
 
   //
@@ -47,13 +52,21 @@ exports.config = {
   // https://docs.saucelabs.com/reference/platforms-configurator
   //
   capabilities: [{
-    // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-    // grid with only 5 firefox instances available you can make sure that not more than
-    // 5 instances get started at a time.
-    maxInstances: 5,
-    //
-    browserName: 'firefox'
-  }],
+      // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+      // grid with only 5 firefox instances available you can make sure that not more than
+      // 5 instances get started at a time.
+      maxInstances: 5,
+      //
+      browserName: 'firefox'
+    },
+    {
+      // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+      // grid with only 5 firefox instances available you can make sure that not more than
+      // 5 instances get started at a time.
+      maxInstances: 5,
+      //
+      browserName: 'chrome'
+    }],
 
   services: ['selenium-standalone'],
   // Path where all logs from the Selenium server should be stored.
@@ -62,6 +75,8 @@ exports.config = {
   // seleniumArgs: [],
   // Object configuration for selenium-standalone.install().
   // seleniumInstallArgs: {}
+
+
 
   desiredCapabilities: {
     browserName: 'chrome',    // options: `firefox`, `chrome`, `opera`, `safari`

@@ -12,25 +12,34 @@
     "testling": "browserify test/node.js | testling",
     "gulp": "gulp",
     "dist": "gulp dist",
-    "cover": "istanbul cover node_modules/tape/bin/tape tests/node.js",
+    "cover": "istanbul cover node_modules/webdriverio/bin/wdio wdio.conf.js",
+    "cover:mocha": "istanbul cover ./node_modules/mocha/bin/_mocha ./test/Emitter.node.spec.ts --require ts-node/register --require jsdom-global/register",
     "test:wdio": "wdio wdio.conf.js",
-    "test": "node tests/node.js"
+    "test": "mocha -r ts-node/register -r jsdom-global/register test/**/*.spec.ts",
+    "test:cov": "nyc npm test"
   },
-  "testling": {
-    "files": "tests/browser.js",
-    "browsers": [
-      "ie/6..latest",
-      "chrome/22..latest",
-      "firefox/16..latest",
-      "safari/latest",
-      "opera/11.0..latest",
-      "iphone/6",
-      "ipad/6",
-      "android-browser/latest"
-    ]
+  "nyc": {
+    "include": [
+      "Emitter.ts",
+      "dist/emitter.es3.browser.js"
+    ],
+    "exclude": [
+      "typings",
+      "**/*.spec.ts",
+      "test/**/*"
+    ],
+    "extension": [
+      ".ts", ".js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "all": true,
+    "sourceMap": true
   },
-  "author": "",
-  "license": "ISC",
+  "author": "n1kk",
+  "license": "MIT",
   "dependencies": {
     "sinon": "^4.4.6"
   },
@@ -45,6 +54,7 @@
     "codecov": "^3.0.0",
     "del": "^3.0.0",
     "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-browser": "^3.0.11",
     "gulp-filter": "^5.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.6.1",
@@ -59,6 +69,7 @@
     "jsdom": "^11.3.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^4.0.0",
+    "nyc": "^11.6.0",
     "phantomjs": "^2.1.7",
     "prettysize": "^1.1.0",
     "rollup": "^0.56.5",
@@ -73,7 +84,9 @@
     "ts-node": "^3.3.0",
     "tsify": "^3.0.4",
     "typescript": "^2.7.2",
+    "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
+    "vinyl-transform": "^1.0.0",
     "wdio-concise-reporter": "^0.1.2",
     "wdio-dot-reporter": "0.0.9",
     "wdio-json-reporter": "^0.3.1",

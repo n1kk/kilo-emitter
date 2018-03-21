@@ -94,4 +94,4 @@ export default class Emitter {
     }
 }
 
-//# sourceMappingURL=emitter.es6.js.map
+//# sourceMappingURL=Emitter.es6.js.map

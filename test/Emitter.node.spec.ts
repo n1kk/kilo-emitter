@@ -1,7 +1,9 @@
-import { expect, use, assert, should as should_ } from 'chai';
-import 'mocha';
-import * as sinon from 'sinon';
-import Emitter from '../Emitter';
-import tests from './Emitter.spec'
+// import Emitter class
+import Emitter from "../Emitter";
+// import suit
+import test from "./Emitter.test.base";
+// run test
+// have to use any here because apparently argument 'typeof Emitter' is not 'typeof Emitter' :/
+test(<any>Emitter)
 
-tests(Emitter)
+

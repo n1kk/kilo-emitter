@@ -3,6 +3,7 @@ export interface Listener extends Function {
   $once ?: boolean;
 }
 
+
 export default class Emitter {
 
   //private static _n = Object.getOwnPropertyNames
