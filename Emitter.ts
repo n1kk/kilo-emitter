@@ -24,6 +24,7 @@ export default class Emitter {
    *
    * @example
    * ```typescript
+   *
    * let someObject = {someField: 'someValue'}
    * Emitter.extend(someObject)
    *
@@ -57,7 +58,7 @@ export default class Emitter {
   }
 
   /**
-   * Subscribes a listener to an event. Listener will persist until removed with .off(). Subscribing an existing listener again will move it to the end (or start, if priority specified) of the queue. Unique listener is considered a combo of an event name and a reference to a function. If a same callback added with a different context it will be considered as a same listener.
+   * Subscribes a listener to an event. Listener will persist until removed with .off(). Subscribing an existing listener again will move it to the end (or start, if priority specified) of the queue. Unique listener is considered a combo of an event name and a reference to a function. If a same callback added with a different context it will be considered as a same listener. Context parameter is skipable, if you pass boolean as 3rd argument it will be used as priority.
    * @param event     Event name you want to subscribe to.
    * @param listener  Listener callback to be invoked.
    * @param context   Context to invoke callback with (pass as this) OR a boolean value for priority if you want to skip context
@@ -66,20 +67,21 @@ export default class Emitter {
    *
    * @example
    * ```typescript
+   *
    * let em = new Emitter()
    *
    * // regulat listener
-   * someObject.on('evt', () => {})
+   * em.on('evt', (val) => {})
    *
    * // listener with context
-   * someObject.on('evt', () => {}, {someField: 'someValue'})
+   * em.on('evt', (val) => {}, {someField: 'someValue'})
    *
    * // listener with priority (added to the start of queue)
-   * someObject.on('evt', () => {}, null, true)
+   * em.on('evt', (val) => {}, null, true)
    * // same
-   * someObject.on('evt', () => {}, true)
+   * em.on('evt', (val) => {}, true)
    *
-   * someObject.emit('evt', ['otherValue'])
+   * em.emit('evt', ['otherValue'])
    * ```
    */
   public on(event: string, listener: Listener, context?: object|boolean, priority?:Boolean) {
@@ -114,6 +116,21 @@ export default class Emitter {
    * @param context   Context to invoke callback with (pass as this).
    * @param priority  If true will add listener to the start of the queue.
    * @returns       Emitter instance for chaining
+   *
+   * @example
+   * ```typescript
+   *
+   * let em = new Emitter()
+   * let cb = () => {}
+   *
+   * em.once('evt', cb)
+   *
+   * console.log( em.triggers('evt', cb) ) // true
+   *
+   * em.emit('evt')
+   *
+   * console.log( em.triggers('evt', cb) ) // false
+   * ```
    */
   public once(event: string, listener: Listener, context?: object, priority?:Boolean) {
     if (event && listener) {
@@ -128,6 +145,26 @@ export default class Emitter {
    * @param event     Event name you want to unsubscribe from.
    * @param listener  Listener callback you want to remove.
    * @returns       Emitter instance for chaining
+   *
+   * @example
+   * ```typescript
+   *
+   * let em = new Emitter()
+   * let cb = () => {}
+   *
+   * em.on('evt', cb) // removed on 1sk off
+   * em.on('evt', () => {}) // removed on 2sk off
+   * em.on('evt2', () => {}) // removed on 3sk off
+   *
+   * // removes specific listener
+   * em.off('evt', cb)
+   *
+   * // removes all listeners for event
+   * em.off('evt')
+   *
+   * // removes all listeners completely
+   * em.off()
+   * ```
    */
   public off(event?: string, listener?: Function) {
     let i, listeners, argNum = arguments.length, events = this.$evt
@@ -143,7 +180,6 @@ export default class Emitter {
         if (!listeners.length)
           delete events[event]
       }
-
     }
     return this;
   }
@@ -153,6 +189,27 @@ export default class Emitter {
    * @param event   Event name whose listeners should be invoked.
    * @param args    Array of arguments that should be passed to each listener callback.
    * @returns       Emitter instance for chaining
+   *
+   * @example
+   * ```typescript
+   *
+   * let em = new Emitter()
+   *
+   * // this listeners stops propagation and removes itself
+   * em.once('evt', (arg1, arg2) => {
+   *   console.log(arg1) // 'a'
+   *   console.log(arg2) // 'b'
+   *   return 'stopEmit'
+   * })
+   *
+   * // this listener is triggered on second emit
+   * em.on('evt', () => {
+   *   // never triggered
+   * })
+   *
+   * em.emit('evt', ['a', 'b'])
+   * em.emit('evt')
+   * ```
    */
   public emit(event: string, args?:any[]) {
     let i, listener, num,
@@ -179,6 +236,29 @@ export default class Emitter {
    * @param event     Event name.
    * @param listener  Listener function.
    * @returns       Boolean value determining whether check succeeded or not.
+   *
+   * @example
+   * ```typescript
+   *
+   * let em = new Emitter()
+   * let cb = () => {}
+   *
+   * em.on('evt', cb)
+   * em.on('evt', () => {})
+   * em.on('evt3', () => {})
+   *
+   * console.log( em.triggers('evt', cb) ) // true
+   * em.off('evt', cb)
+   * console.log( em.triggers('evt', cb) ) // false
+   *
+   * console.log( em.triggers('evt') ) // true
+   * em.off('evt')
+   * console.log( em.triggers('evt') ) // false
+   *
+   * console.log( em.triggers() ) // true
+   * em.off()
+   * console.log( em.triggers() ) // false
+   * ```
    */
   public triggers(event?: string, listener?: Function): boolean {
     let listeners, argsNum = arguments.length, events = this.$evt
