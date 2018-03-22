@@ -83,6 +83,16 @@ export default function test(Emitter: typeof EmitterClass.default) {
             expect(cb1.calledAfter(cb2)).to.be.true
           })
 
+          it('should add priority listeners to the front of the queue', () => {
+            let cb1 = sinon.spy(), cb2 = sinon.spy()
+            em.on('ev1', cb1)
+              .on('ev1', cb2, null, true)
+              .emit('ev1')
+            expect(cb1.called).to.be.true
+            expect(cb2.called).to.be.true
+            expect(cb2.calledBefore(cb1)).to.be.true
+          })
+
           it('should ignore if no listener passed', () => {
             (<any>em.on)('ev2')
             expect(em.triggers('ev2')).to.be.false
@@ -265,6 +275,18 @@ export default function test(Emitter: typeof EmitterClass.default) {
             let cb = sinon.spy()
             em.on('ev10', cb)
             expect(() => (<any>em.emit)()).to.not.throw()
+            expect(cb.called).to.be.false
+          })
+
+          it('should stop emit if "stopEmit" is returned', () => {
+            let cb1 = sinon.spy(() => "stopEmit"), cb2 = sinon.spy()
+            em.once('ev10', cb1)
+              .once('ev10', cb2)
+              .emit('ev10')
+            expect(cb1.called).to.be.true
+            expect(cb2.called).to.be.false
+            expect(em.triggers('ev10', cb1)).to.be.false
+            expect(em.triggers('ev10', cb2)).to.be.true
           })
 
         })

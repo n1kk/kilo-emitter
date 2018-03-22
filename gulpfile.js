@@ -24,17 +24,15 @@ const prettySize = require('prettysize');
 const gzipSize = require('gzip-size');
 const table = require('table');
 
-const baseTsConfig = {
-	"declaration": true,
-	"sourceMap": true,
-	"noImplicitAny": true,
-	"removeComments": true,
-}
-
 const inFile = 'Emitter.ts'
 const filterNames = ['*.js']
 const outDir = 'dist'
 
+const baseTsConfig = require('./tsconfig')
+const tsConfig = Object.assign( baseTsConfig.compilerOptions, {
+  rootDir: './',
+  outDir
+})
 
 function clean() {
 	return del([ outDir ]);
@@ -53,13 +51,14 @@ function build_browser() {
     .pipe(replace(/IF NOT BROWSER \*\//g, ''))
     .pipe(replace(/IF BROWSER/g, '*/'))
 
-    .pipe(ts(Object.assign(baseTsConfig, {
+    .pipe(ts(Object.assign(tsConfig, {
 			target: "es3",
 			module: "none",
 			declaration: false,
       // TODO: source maps doesn't match real file path, looks for ts file in dist dir
       // https://github.com/istanbuljs/nyc/issues/359
-      rootDir: './', outDir
+      rootDir: './',
+      outDir
 		})))
 
     .pipe(rename({suffix: '.es3'}))
@@ -94,14 +93,14 @@ function build_umd() {
     .pipe(replace(/IF NOT BROWSER \*\//g, ''))
     .pipe(replace(/IF BROWSER/g, '*/'))
 
-    .pipe(ts(Object.assign(baseTsConfig, {
+    .pipe(ts(Object.assign(tsConfig, {
       target: "es3",
       module: "umd",
       declaration: false
     })))
 
     .pipe(rename({suffix: '.es3.umd'}))
-    .pipe(sourcemaps.write('.'))
+    .pipe(sourcemaps.write('.', {destPath: outDir}))
     .pipe(gulp.dest(outDir))
     .pipe(filter(['**/*.js']))
     .pipe(uglify())
@@ -113,7 +112,7 @@ function build_umd() {
 function build_node() {
 	return gulp.src(inFile)
     .pipe(sourcemaps.init())
-    .pipe(ts(Object.assign(baseTsConfig, {
+    .pipe(ts(Object.assign(tsConfig, {
 			target: "es2015",
 			module: "commonjs",
       declaration: true,
@@ -121,7 +120,7 @@ function build_node() {
 		})))
 
 		//.pipe(rename({suffix: '.es3'}))
-		.pipe(sourcemaps.write('.'))
+		.pipe(sourcemaps.write('.', {destPath: outDir}))
 		.pipe(gulp.dest(outDir))
 
 		.pipe(filter(['**/*.js']))
@@ -134,7 +133,7 @@ function build_node() {
 function build_es6() {
 	return gulp.src(inFile)
 		.pipe(sourcemaps.init())
-    .pipe(ts(Object.assign(baseTsConfig, {
+    .pipe(ts(Object.assign(tsConfig, {
 			target: "es2015",
 			module: "es6",
       declaration: false,
@@ -143,7 +142,7 @@ function build_es6() {
   // set PATH=%PATH%;%cd%\node_modules\.bin
   // export PATH=$PATH:$(pwd)/node_modules/.bin
 		.pipe(rename({suffix: '.es6'}))
-		.pipe(sourcemaps.write('.'))
+		.pipe(sourcemaps.write('.', {destPath: outDir}))
 		.pipe(gulp.dest(outDir))
 
 		.pipe(filter(['**/*.js']))
@@ -164,7 +163,7 @@ function build_browser_tests() {
     })
       .add([filename])
       // .add(['test/Emitter.spec.ts'])
-      /*.plugin(tsify, Object.assign(baseTsConfig, {
+      /*.plugin(tsify, Object.assign(tsConfig, {
         target: "es3",
         module: "none",
         declaration: false

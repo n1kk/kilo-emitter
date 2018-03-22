@@ -56,18 +56,16 @@ export default class Emitter {
         return this;
     }
     emit(event, ...args) {
-        let i, result, listener, num, listeners = this.$evt[event];
+        let i, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
             for (i = 0; i < num; i++) {
                 listener = listeners[i];
-                result = listener.apply(listener.$ctx, args);
+                if (listener.apply(listener.$ctx, args) === "stopEmit")
+                    i = num;
                 if (listener.$once) {
                     this.off(event, listener);
                     delete listener.$once;
-                }
-                if (result === false) {
-                    break;
                 }
             }
         }

@@ -74,7 +74,7 @@ export default class Emitter {
 
   // for browser build ...args will be replaced with [].slice.call(arguments) for a smaller footprint
   public emit(event: string /* IF NOT BROWSER */, ...args:any[] /**/) {
-    let i, result, listener, num,
+    let i, listener, num,
       /* IF BROWSER
       args = arguments,
       /**/
@@ -90,13 +90,12 @@ export default class Emitter {
       /**/
       for (i = 0; i < num; i++) {
         listener = listeners[i]
-        result = listener.apply(listener.$ctx, args)
+        // if listener returns "stopEmit" then do not invoke any other listeners
+        if (listener.apply(listener.$ctx, args) === "stopEmit")
+          i = num
         if (listener.$once) {
           this.off(event, listener)
           delete listener.$once
-        }
-        if (result === false) {
-          break
         }
       }
     }

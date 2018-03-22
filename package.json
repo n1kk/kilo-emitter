@@ -1,22 +1,17 @@
 {
-  "name": "dead-simple-event-emmiter",
-  "version": "1.0.0",
+  "name": "kilo-emitter",
+  "version": "0.1.0",
   "description": "",
-  "main": "dist/emitter.js",
-  "module": "dist/emitter.es6.js",
-  "browser": "dist/emitter.es3.js",
+  "main": "dist/Emitter.js",
+  "module": "dist/Emitter.es6.js",
+  "browser": "dist/Emitter.es3.browser.js",
+  "types": "dist/emitter.es3.js",
   "scripts": {
-    "roll": "rollup -c",
-    "bundle.tests": "browserify ./test/browser.js > ./test/browser.bundle.js",
-    "testling1": "testling -x open",
-    "testling": "browserify test/node.js | testling",
-    "gulp": "gulp",
-    "dist": "gulp dist",
-    "cover": "istanbul cover node_modules/webdriverio/bin/wdio wdio.conf.js",
-    "cover:mocha": "istanbul cover ./node_modules/mocha/bin/_mocha ./test/Emitter.node.spec.ts --require ts-node/register --require jsdom-global/register",
-    "test:wdio": "wdio wdio.conf.js",
+    "build": "gulp dist",
     "test": "mocha -r ts-node/register -r jsdom-global/register test/**/*.spec.ts",
-    "test:cov": "nyc npm test"
+    "test:wdio": "wdio wdio.conf.js",
+    "test:cov": "nyc npm test",
+    "all": "npm run build && npm run test:cov && npm run test:wdio"
   },
   "nyc": {
     "include": [
@@ -29,14 +24,22 @@
       "test/**/*"
     ],
     "extension": [
-      ".ts", ".js"
+      ".ts",
+      ".js"
     ],
     "reporter": [
       "lcov",
+      "json-summary",
       "text-summary"
     ],
     "all": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100
   },
   "author": "n1kk",
   "license": "MIT",
@@ -60,6 +63,7 @@
     "gulp-replace": "^0.6.1",
     "gulp-save": "^1.3.0",
     "gulp-sourcemaps": "^2.6.4",
+    "gulp-typedoc": "^2.2.0",
     "gulp-typescript": "^4.0.1",
     "gulp-uglify": "^3.0.0",
     "gulp-uglify-es": "^1.0.1",
@@ -83,6 +87,7 @@
     "ts-loader": "^2.3.7",
     "ts-node": "^3.3.0",
     "tsify": "^3.0.4",
+    "typedoc": "^0.11.1",
     "typescript": "^2.7.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",

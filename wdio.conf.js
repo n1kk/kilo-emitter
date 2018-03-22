@@ -36,7 +36,7 @@ exports.config = {
   framework: 'mocha',
   reporters: ['dot', 'spec', 'json', 'concise'],
   reporterOptions: {
-    outputDir: './test/results',
+    outputDir: './logs',
   },
 
 
