@@ -84,13 +84,22 @@ export default function test(Emitter: typeof EmitterClass.default) {
           })
 
           it('should add priority listeners to the front of the queue', () => {
-            let cb1 = sinon.spy(), cb2 = sinon.spy()
+            let cb1 = sinon.spy()
+              , cb2 = sinon.spy()
+              , cb3 = sinon.spy()
+              , cb4 = sinon.spy()
             em.on('ev1', cb1)
-              .on('ev1', cb2, null, true)
+              .on('ev1', cb2, true)
+              .on('ev1', cb3, null, true)
+              .on('ev1', cb4, false)
               .emit('ev1')
             expect(cb1.called).to.be.true
             expect(cb2.called).to.be.true
+            expect(cb3.called).to.be.true
+            expect(cb4.called).to.be.true
             expect(cb2.calledBefore(cb1)).to.be.true
+            expect(cb3.calledBefore(cb2)).to.be.true
+            expect(cb4.calledAfter(cb1)).to.be.true
           })
 
           it('should ignore if no listener passed', () => {
@@ -267,7 +276,7 @@ export default function test(Emitter: typeof EmitterClass.default) {
           it('should pass arguments to callback', () => {
             let cb = sinon.spy()
             em.on('ev10', cb)
-              .emit('ev10', 1, true, "three")
+              .emit('ev10', [1, true, "three"])
             expect(cb.calledWithExactly(1, true, "three")).to.be.true
           })
 
@@ -334,7 +343,7 @@ export default function test(Emitter: typeof EmitterClass.default) {
               })
             }).to.throw()
             expect(() => {
-              (cb = em.emit)("ev", 1, 2, 3)
+              (cb = em.emit)("ev", [1, 2, 3])
             }).to.throw()
             expect(() => {
               (cb = em.off)("ev", () => {
