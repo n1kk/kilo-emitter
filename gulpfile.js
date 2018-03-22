@@ -4,9 +4,6 @@ const path = require('path');
 const ts = require('gulp-typescript');
 
 const gulp = require('gulp');
-const browserify = require('browserify');
-const transform = require('vinyl-transform');
-const gulpBrowser = require('gulp-browser');
 const uglify = require('gulp-uglify');
 const save = require('gulp-save');
 const sourcemaps = require('gulp-sourcemaps');
@@ -15,17 +12,13 @@ const rename = require('gulp-rename');
 const replace = require('gulp-replace');
 const uglify_es = require('gulp-uglify-es').default;
 const del = require('del');
-
-const source = require('vinyl-source-stream');
-const buffer = require('vinyl-buffer');
-const tsify = require("tsify");
+const typedoc = require("gulp-typedoc");
 
 const prettySize = require('prettysize');
 const gzipSize = require('gzip-size');
 const table = require('table');
 
 const inFile = 'Emitter.ts'
-const filterNames = ['*.js']
 const outDir = 'dist'
 
 const baseTsConfig = require('./tsconfig')
@@ -151,69 +144,65 @@ function build_es6() {
 		.pipe(gulp.dest(outDir))
 }
 
-function build_browser_tests() {
+function gen_docs() {
+  return gulp
+    .src([inFile])
+    .pipe(typedoc(Object.assign(tsConfig, {
+      // TypeScript options (see typescript docs)
+      target: "es2015",
+      module: "es6",
+      declaration: false,
 
-  let browserified = transform(function(filename) {
-    console.log('-------------------------------', filename)
-    let b = browserify({
-      debug: true,
-      //entries: ['test/Emitter.spec.ts'],
-      cache: {},
-      packageCache: {}
-    })
-      .add([filename])
-      // .add(['test/Emitter.spec.ts'])
-      /*.plugin(tsify, Object.assign(tsConfig, {
-        target: "es3",
-        module: "none",
-        declaration: false
-      }))*/
-      .bundle()
-    console.log('------------------------------- bundleed')
-    return b
+      // Output options (see typedoc docs)
+      out: "./docs",
+      json: "./docs/docs.json",
 
-  });
-
-  return gulp.src(['test/Emitter.spec.ts'])
-    /*.pipe( replace(
-      'import Emitter from \'../Emitter\';',
-      'var emt = require("../dist/emitter.es3.min.js")'
-    ))*/
-    //.pipe(gulpBrowser.browserify(transforms))
-    .pipe(browserified)
-    //.pipe(source('output.js'))
-    //.pipe(buffer())
-    .pipe(gulp.dest("test/dist"));
+      // TypeDoc options (see typedoc docs)
+      name: "kilo-emitter",
+      theme: "minimal",
+      //plugins: ["my", "plugins"],
+      ignoreCompilerErrors: false,
+      version: true,
+    })))
 }
 
 function report(cb) {
-	let data = [['Name', 'Bytes', 'Gzip', ' %']],
-		config = { columns: {
-			0: {alignment: 'left'},
-			1: {alignment: 'right'},
-			2: {alignment: 'right'}
-		}, drawHorizontalLine: (i, s) => i<2||i===s };
+	let data = []
 	fs.readdirSync(outDir)
 		.filter(name => name.match(/\.js$/))
 		.forEach(name => {
 			let fullPath = path.resolve(__dirname, outDir, name)
-			let size, gzip, stats = fs.lstatSync(fullPath)
-			data.push([
-				name,
-				size = stats.size,
-				//prettySize(stats.size, {one: true/*, places: 2*/}),
-        gzip = gzipSize.sync(fs.readFileSync(fullPath, 'utf8')),
-				//prettySize(gzipSize.sync(fs.readFileSync(fullPath, 'utf8')), {one: true/*, places: 2*/})
-        (100*gzip/size >> 0) + '%'
-			])
+			let stats = fs.lstatSync(fullPath)
+        , size = stats.size
+      //prettySize(stats.size, {one: true/*, places: 2*/})
+        , gzip = gzipSize.sync(fs.readFileSync(fullPath, 'utf8'))
+      //prettySize(gzipSize.sync(fs.readFileSync(fullPath, 'utf8')), {one: true/*, places: 2*/})
+        , pct = (100 * gzip / size >> 0) + '%'
+			data.push({name, size, gzip, pct})
 		})
+
+  // delay size report printing to have it after gulp finishes
 	setTimeout(() => {
-		console.log(table.table(data, config))
+	  let tbl = table.table(
+      /*DATA*/ [['Name', 'Bytes', 'Gzip', ' %']].concat(data.map(f => [f.name, f.size, f.gzip, f.pct])),
+      /*CONFIG*/ {
+        columns: {
+          0: {alignment: 'left'},
+          1: {alignment: 'right'},
+          2: {alignment: 'right'}
+        }, drawHorizontalLine: (i, s) => i < 2 || i === s
+      }
+    )
+		console.log(tbl)
+    fs.writeFileSync(path.resolve(__dirname, 'docs/sizereport.json'), JSON.stringify(data, null, '  '), 'utf8')
+    fs.writeFileSync(path.resolve(__dirname, 'docs/sizereporttable.txt'), tbl, 'utf8')
 	}, 100)
+
+  // finish task and let gulp print it's report
 	cb && cb()
 }
 
-gulp.task('build_browser_tests', build_browser_tests);
+gulp.task('gen_docs', gen_docs);
 
 let dist = gulp.series(
   clean,
