@@ -14,13 +14,21 @@ window.Emitter = (function () {
     Emitter.prototype.on = function (event, listener, context, priority) {
         var listeners, events = this.$evt;
         if (event && listener) {
-            listener.$ctx = context;
+            if (typeof context == 'boolean') {
+                priority = context;
+                context = null;
+            }
+            else {
+                listener.$ctx = context;
+            }
             if (listeners = events[event]) {
                 this.off(event, listener);
-                if (priority)
+                if (priority) {
                     listeners.unshift(listener);
-                else
+                }
+                else {
                     listeners.push(listener);
+                }
             }
             else {
                 listeners = [listener];
@@ -55,13 +63,10 @@ window.Emitter = (function () {
         }
         return this;
     };
-    Emitter.prototype.emit = function (event) {
-        var i, listener, num, args = arguments, listeners = this.$evt[event];
+    Emitter.prototype.emit = function (event, args) {
+        var i, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
-            args = args.length > 1
-                ? [].slice.call(args, 1)
-                : [];
             for (i = 0; i < num; i++) {
                 listener = listeners[i];
                 if (listener.apply(listener.$ctx, args) === "stopEmit")

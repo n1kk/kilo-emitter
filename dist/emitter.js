@@ -16,13 +16,21 @@ class Emitter {
     on(event, listener, context, priority) {
         let listeners, events = this.$evt;
         if (event && listener) {
-            listener.$ctx = context;
+            if (typeof context == 'boolean') {
+                priority = context;
+                context = null;
+            }
+            else {
+                listener.$ctx = context;
+            }
             if (listeners = events[event]) {
                 this.off(event, listener);
-                if (priority)
+                if (priority) {
                     listeners.unshift(listener);
-                else
+                }
+                else {
                     listeners.push(listener);
+                }
             }
             else {
                 listeners = [listener];
@@ -57,7 +65,7 @@ class Emitter {
         }
         return this;
     }
-    emit(event, ...args) {
+    emit(event, args) {
         let i, listener, num, listeners = this.$evt[event];
         if (listeners && (num = listeners.length)) {
             listeners = listeners.slice();
