@@ -8,14 +8,15 @@
   "types": "dist/emitter.es3.js",
   "scripts": {
     "build": "gulp dist",
+    "docs": "gulp docs",
     "test": "mocha -r ts-node/register -r jsdom-global/register test/**/*.spec.ts",
     "test:wdio": "wdio wdio.conf.js",
     "test:cov": "nyc npm test",
-    "all": "npm run build && npm run test:cov && npm run test:wdio"
+    "all": "npm run build && npm run test:cov && npm run test:wdio && npm run docs"
   },
   "nyc": {
     "include": [
-      "Emitter.ts",
+      "src/Emitter.ts",
       "dist/emitter.es3.browser.js"
     ],
     "exclude": [
@@ -44,7 +45,9 @@
   "author": "n1kk",
   "license": "MIT",
   "dependencies": {
-    "sinon": "^4.4.6"
+    "lodash.template": "^4.4.0",
+    "sinon": "^4.4.6",
+    "strip-indent": "^2.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
@@ -54,6 +57,7 @@
     "chai": "^4.1.2",
     "codecov": "^3.0.0",
     "del": "^3.0.0",
+    "fs-extra": "^5.0.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-filter": "^5.1.0",
     "gulp-rename": "^1.2.2",

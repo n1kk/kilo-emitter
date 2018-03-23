@@ -10,5 +10,7 @@
     "removeComments": true,
     "preserveConstEnums": false
   },
-  "files": ["Emitter.ts"]
+  "files": [
+    "src/Emitter.ts"
+  ]
 }

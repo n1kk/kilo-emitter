@@ -1,5 +1,5 @@
 // import Emitter class
-import Emitter from "../Emitter";
+import Emitter from "../src/Emitter";
 // import suit
 import test from "./Emitter.test.base";
 // run test

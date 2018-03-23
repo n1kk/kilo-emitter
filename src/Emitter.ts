@@ -14,6 +14,44 @@ export interface Listener extends Function {
 
 /**
  * Event Emitter class that takes care of managing subscribed listeners and dispatching events to them.
+ * @example_node
+ * ```javascript
+ * const Emitter = require('kilo-emitter')
+ * let cb = (World) => { console.log(`Hello ${World}!`) }
+ *
+ * let myEmitter = new Emitter()
+ * myEmitter.on('evt', cb)
+ * myEmitter.emit('evt', ['World']) // `Hello World!`
+ * console.log(myEmitter.triggers('evt', cb)) // true
+ * myEmitter.off('evt')
+ * console.log(myEmitter.triggers('evt', cb)) // false
+ * ```
+ * @example_es6
+ * ```typescript
+ * import Emitter from 'kilo-emitter'
+ *
+ * let myEmitter = new Emitter()
+ * myEmitter.once('evt', console.log)
+ * myEmitter.once('evt2', console.log)
+ * myEmitter.emit('evt', ['hey there']) // 'hey there'
+ * console.log(myEmitter.triggers('evt', console.log)) // false
+ * console.log(myEmitter.triggers()) // true
+ * myEmitter.off()
+ * console.log(myEmitter.triggers()) // false
+ * ```
+ * @example_browser
+ * ```html
+ *  <script src="Emitter.js"></script>
+ *
+ * <script src="Emitter.js">
+ * var myEmitter = new Emitter()
+ * myEmitter.once('evt', (param) => {
+ *     	console.log(`Hey ${param}!`)
+ *     }, ['there'])
+ * myEmitter.emit('evt')
+ * </script>
+ * ```
+ *
  */
 export default class Emitter {
 
