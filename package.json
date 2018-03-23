@@ -44,11 +44,7 @@
   },
   "author": "n1kk",
   "license": "MIT",
-  "dependencies": {
-    "lodash.template": "^4.4.0",
-    "sinon": "^4.4.6",
-    "strip-indent": "^2.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
@@ -80,10 +76,10 @@
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.2.0",
+    "sinon": "^4.4.6",
     "slimerjs": "^0.10.3",
+    "strip-indent": "^2.0.0",
     "table": "^4.0.3",
-    "tape": "^4.9.0",
-    "tape-run": "^3.0.4",
     "ts-loader": "^2.3.7",
     "ts-node": "^3.3.0",
     "typedoc": "^0.11.1",

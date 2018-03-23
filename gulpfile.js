@@ -18,7 +18,6 @@ const prettySize = require('prettysize');
 const gzipSize = require('gzip-size');
 const table = require('table');
 const stripIndent = require('strip-indent');
-const template = require('lodash.template');
 
 const inFile = 'src/Emitter.ts'
 const outDir = 'dist'
@@ -29,8 +28,12 @@ const tsConfig = Object.assign( baseTsConfig.compilerOptions, {
   outDir
 })
 
-function clean() {
-	return del([ outDir ]);
+function clean_dist() {
+	return del([ outDir]);
+}
+
+function clean_docs() {
+  return del([ 'docs', 'README.md' ]);
 }
 
 function build_browser() {
@@ -278,7 +281,7 @@ gulp.task('gen_docs', gen_docs);
 gulp.task('gen_readme', gen_readme);
 
 let dist = gulp.series(
-  clean,
+  clean_dist,
   build_browser,
   build_umd,
   build_node,
@@ -289,6 +292,7 @@ let dist = gulp.series(
 gulp.task('dist', dist);
 
 let docs = gulp.series(
+  clean_docs,
   gen_docs,
   gen_readme,
 );
