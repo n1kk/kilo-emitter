@@ -255,7 +255,7 @@ function gen_readme() {
       , paramsExt = sig.parameters.map(p => `${p.name}${p.flags.isOptional?'?':''}:${p.type.name}`).join(', ')
       , paramsInfo = sig.parameters.map(p => `// @param\t${p.name} : ${p.comment.text}`).join('\n')
     return stripIndent(`
-### ${ch.flags.isStatic ? '`static`' : ''} ${sig.name}(${params})
+### ${ch.flags.isStatic ? '_`static`_' : ''} \`${sig.name}(${params})\`
 ${sig.comment.shortText}
 ##### Signature:
 \`\`\`typescript

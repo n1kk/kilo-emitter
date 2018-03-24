@@ -101,7 +101,7 @@ var Emitter=function(){function t(){this.$evt={}}return t.extend=function(e){var
 ## API
 
 
-###  emit(event, args)
+###  `emit(event, args)`
 Emits an event invoking all the listeners subscribed to it and passing rest of the arguments to them. Listeners array is cloned to prevent errors due to array mutation while event is still being emitted. If listener returns a string 'stopEmit' then the process will be aborted and rest of the listeners in queue will not be invoked, if some of then were added as .once() then it means that they will not be removed and will remain in queue until invoked or removed explicitly.
 ##### Signature:
 ```typescript
@@ -136,7 +136,7 @@ em.emit('evt')
 
 
 
-###  off(event, listener)
+###  `off(event, listener)`
 If both arguments are passed it removes the listener if such exists. If only event name is passed it will remove all the listeners for that event. If no arguments passed it will purge all the listeners for current emitter. Distinction is made by the length of the `arguments` variable to avoid undesired behaviour when `null` or `undefined` are passed due to an error. This means that `off('init')` will try to remove all listeners for _'init'_ event and `off(null)` will try to remove all events for  _'null'_ event.
 ##### Signature:
 ```typescript
@@ -170,7 +170,7 @@ em.off()
 
 
 
-###  on(event, listener, context, priority)
+###  `on(event, listener, context, priority)`
 Subscribes a listener to an event. Listener will persist until removed with .off(). Subscribing an existing listener again will move it to the end (or start, if priority specified) of the queue. Unique listener is considered a combo of an event name and a reference to a function. If a same callback added with a different context it will be considered as a same listener. Context parameter is skipable, if you pass boolean as 3rd argument it will be used as priority.
 ##### Signature:
 ```typescript
@@ -205,7 +205,7 @@ em.emit('evt', ['otherValue'])
 
 
 
-###  once(event, listener, context, priority)
+###  `once(event, listener, context, priority)`
 Same as `.on()` but listener will be automatically removed after first invocation.
 ##### Signature:
 ```typescript
@@ -236,7 +236,7 @@ console.log( em.triggers('evt', cb) ) // false
 
 
 
-###  triggers(event, listener)
+###  `triggers(event, listener)`
 If both arguments are passed then it will check whether specific listener is subscribed for specific event. If only event name is passed it will check if there are any listeners subscribed for that event. If no arguments passed it will check if emitter has any listeners at all. Distinction is made by the length of the `arguments` variable to avoid undesired behaviour when `null` or `undefined` are passed due to an error. This means that `triggers('init')` will check if there are any listeners fot the event _'init'_ and `triggers(null)` will check if there are any listeners fot the event  _'null'_.
 ##### Signature:
 ```typescript
@@ -273,7 +273,7 @@ console.log( em.triggers() ) // false
 
 
 
-### `static` extend(target)
+### _`static`_ `extend(target)`
 Extends target object that is passed to it with Emitter class methods. It creates new Emitter class and assigns all of it's fields and methods (including $evt) to target object. Note that those methods will override existing fields with same names and also should now be invoked on target since they rely on `this` keyword.
 ##### Signature:
 ```typescript
