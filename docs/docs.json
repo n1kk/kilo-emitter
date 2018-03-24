@@ -12,7 +12,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "F:/Dev/web_playgrounds/dssm/src/Emitter.ts",
+			"originalName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/src/Emitter.ts",
 			"children": [
 				{
 					"id": 27,
@@ -773,7 +773,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 306,
 									"character": 22
 								}
@@ -793,7 +793,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 292,
 									"character": 13
 								}
@@ -817,7 +817,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 293,
 									"character": 10
 								}
@@ -841,7 +841,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 289,
 									"character": 19
 								}
@@ -865,7 +865,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 288,
 									"character": 13
 								}
@@ -952,7 +952,7 @@
 							],
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 268,
 									"character": 9
 								}
@@ -1038,7 +1038,7 @@
 							],
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 283,
 									"character": 8
 								}
@@ -1124,7 +1124,7 @@
 							],
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 275,
 									"character": 8
 								}
@@ -1164,7 +1164,7 @@
 							],
 							"sources": [
 								{
-									"fileName": "F:/Dev/web_playgrounds/dssm/node_modules/typescript/lib/lib.d.ts",
+									"fileName": "/Users/n1kk/Dev/Web/dead-simple-event-emitter/node_modules/typescript/lib/lib.d.ts",
 									"line": 286,
 									"character": 12
 								}

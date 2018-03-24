@@ -213,7 +213,7 @@ function gen_readme() {
     tbl.splice(1,0,tbl[0].map(_=>'---'))
     return tbl.map(row => row.join(' | ')).join('\n')
   }
-    , remNL = text => text.replace(/\\n/g, '\n')
+    , stringify = text => eval(new String(text))
 
   // generate coverage table
   let cov = require(path.resolve(__dirname, 'coverage/coverage-summary.json'))
@@ -244,16 +244,16 @@ function gen_readme() {
     , emitter = module.children.filter(ch => ch.name === "Emitter")[0]
     , methods = emitter.children.filter(ch => ch.name !== "constructor" && !ch.flags.isPrivate)
 
-  g = g.pipe(replace("${UsageNode}", remNL(emitter.comment.tags.filter(t => t.tag === "example_node")[0].text)))
-  g = g.pipe(replace("${UsageES6}", remNL(emitter.comment.tags.filter(t => t.tag === "example_es6")[0].text)))
-  g = g.pipe(replace("${UsageBrowser}", remNL(emitter.comment.tags.filter(t => t.tag === "example_browser")[0].text)))
+  g = g.pipe(replace("${UsageNode}", stringify(emitter.comment.tags.filter(t => t.tag === "example_node")[0].text)))
+  g = g.pipe(replace("${UsageES6}", stringify(emitter.comment.tags.filter(t => t.tag === "example_es6")[0].text)))
+  g = g.pipe(replace("${UsageBrowser}", stringify(emitter.comment.tags.filter(t => t.tag === "example_browser")[0].text)))
 
   let apimd = methods.map(ch => {
     let sig = ch.signatures[0]
-      , example = (_=>_[0] ? remNL(_[0].text) : '')(sig.comment.tags.filter(t => t.tag === 'example'))
+      , example = (_=>_[0] ? stringify(_[0].text) : '')(sig.comment.tags.filter(t => t.tag === 'example'))
       , params = sig.parameters.map(p=>p.name).join(', ')
       , paramsExt = sig.parameters.map(p => `${p.name}${p.flags.isOptional?'?':''}:${p.type.name}`).join(', ')
-      , paramsInfo = sig.parameters.map(p => `// @param\\t${p.name} : ${p.comment.text}`).join('\\n')
+      , paramsInfo = sig.parameters.map(p => `// @param\t${p.name} : ${p.comment.text}`).join('\n')
     return stripIndent(`
 ### ${ch.flags.isStatic ? '`static`' : ''} ${sig.name}(${params})
 ${sig.comment.shortText}

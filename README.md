@@ -25,10 +25,10 @@ So here's what I needed from event emitter and ended up implementing in this one
  
 Type | Coverage
 --- | ---
-Statements | 100 ( 130/130)
-Branches | 100 ( 84/84)
-Functions | 100 ( 18/18)
-Lines | 100 ( 126/126)
+Statements | 100 ( 66/66)
+Branches | 100 ( 42/42)
+Functions | 100 ( 9/9)
+Lines | 100 ( 63/63)
 
 #### `dist` directory size listing
 
@@ -106,7 +106,8 @@ Emits an event invoking all the listeners subscribed to it and passing rest of t
 ##### Signature:
 ```typescript
 function emit(event:string, args?:undefined): this
-// @param\tevent : Event name whose listeners should be invoked.\n// @param\targs : Array of arguments that should be passed to each listener callback.
+// @param	event : Event name whose listeners should be invoked.
+// @param	args : Array of arguments that should be passed to each listener callback.
 // @returns	Emitter instance for chaining
 
 ```
@@ -140,7 +141,8 @@ If both arguments are passed it removes the listener if such exists. If only eve
 ##### Signature:
 ```typescript
 function off(event?:string, listener?:Function): this
-// @param\tevent : Event name you want to unsubscribe from.\n// @param\tlistener : Listener callback you want to remove.
+// @param	event : Event name you want to unsubscribe from.
+// @param	listener : Listener callback you want to remove.
 // @returns	Emitter instance for chaining
 
 ```
@@ -173,7 +175,10 @@ Subscribes a listener to an event. Listener will persist until removed with .off
 ##### Signature:
 ```typescript
 function on(event:string, listener:Listener, context?:undefined, priority?:Boolean): this
-// @param\tevent : Event name you want to subscribe to.\n// @param\tlistener : Listener callback to be invoked.\n// @param\tcontext : Context to invoke callback with (pass as this) OR a boolean value for priority if you want to skip context\n// @param\tpriority : If true will add listener to the start of the queue.
+// @param	event : Event name you want to subscribe to.
+// @param	listener : Listener callback to be invoked.
+// @param	context : Context to invoke callback with (pass as this) OR a boolean value for priority if you want to skip context
+// @param	priority : If true will add listener to the start of the queue.
 // @returns	Emitter instance for chaining
 
 ```
@@ -205,7 +210,10 @@ Same as `.on()` but listener will be automatically removed after first invocatio
 ##### Signature:
 ```typescript
 function once(event:string, listener:Listener, context?:object, priority?:Boolean): this
-// @param\tevent : Event name you want to subscribe to.\n// @param\tlistener : Listener callback to be invoked.\n// @param\tcontext : Context to invoke callback with (pass as this).\n// @param\tpriority : If true will add listener to the start of the queue.
+// @param	event : Event name you want to subscribe to.
+// @param	listener : Listener callback to be invoked.
+// @param	context : Context to invoke callback with (pass as this).
+// @param	priority : If true will add listener to the start of the queue.
 // @returns	Emitter instance for chaining
 
 ```
@@ -233,7 +241,8 @@ If both arguments are passed then it will check whether specific listener is sub
 ##### Signature:
 ```typescript
 function triggers(event?:string, listener?:Function): boolean
-// @param\tevent : Event name.\n// @param\tlistener : Listener function.
+// @param	event : Event name.
+// @param	listener : Listener function.
 // @returns	Boolean value determining whether check succeeded or not.
 
 ```
@@ -269,7 +278,7 @@ Extends target object that is passed to it with Emitter class methods. It create
 ##### Signature:
 ```typescript
 function extend(target:T): undefined
-// @param\ttarget : An object that will be extended.
+// @param	target : An object that will be extended.
 // @returns	Extended target object
 
 ```
