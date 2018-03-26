@@ -48,24 +48,25 @@ Emitter.js | 3161 | 843 | 26%
 Emitter.min.js | 975 | 535 | 54%
 
 ## Usage
-Package manager
+##### Package manager
 ```bash
 npm i kilo-emitter
 ```
 ```bash
 yarn add kilo-emitter
 ```
-Browser tag
+##### Browser tag
 ```html
 <script src="https://unpkg.com/kilo-emitter/dist/Emitter.es3.browser.js"></script>
 ```
+##### Inlined
 Or you can just grab this compiled inlined version and copy-paste it in your code.
 
-#####ES3, __1019__ Bytes
+ES3, __1019__ Bytes
 ```javascript
 var Emitter=function(){function t(){this.$evt={}}return t.extend=function(e){var n;return e&&"object"==typeof e&&(n=new t,["$evt","on","off","once","emit","triggers"].forEach(function(t){e[t]=n[t]})),e},t.prototype.on=function(t,e,n,o){var i,r=this.$evt;return t&&e&&("boolean"==typeof n?(o=n,n=null):e.$ctx=n,(i=r[t])?(this.off(t,e),o?i.unshift(e):i.push(e)):i=[e],r[t]=i),this},t.prototype.once=function(t,e,n,o){return t&&e&&(e.$once=!0,this.on(t,e,n,o)),this},t.prototype.off=function(t,e){var n,o,i=arguments.length,r=this.$evt;return 0===i?this.$evt={}:1===i?delete r[t]:-1<(n=(o=r[t])?o.indexOf(e):-1)&&(o.splice(n,1),o.length||delete r[t]),this},t.prototype.emit=function(t,e){var n,o,i,r=this.$evt[t];if(r&&(i=r.length))for(r=r.slice(),n=0;n<i;n++)"stopEmit"===(o=r[n]).apply(o.$ctx,e)&&(n=i),o.$once&&(this.off(t,o),delete o.$once);return this},t.prototype.triggers=function(t,e){var n,o=arguments.length,i=this.$evt;return o?!!(n=i[t])&&(!(1<o)||-1<n.indexOf(e)):!!Object.getOwnPropertyNames(i).length},t}();
 ```
-##### ES6, __883__ Bytes
+ES6, __883__ Bytes
 ```javascript
 class Emitter{static extend(t){let e;return t&&"object"==typeof t&&(e=new Emitter,["$evt","on","off","once","emit","triggers"].forEach(n=>{t[n]=e[n]})),t}constructor(){this.$evt={}}on(t,e,n,i){let s,r=this.$evt;return t&&e&&("boolean"==typeof n?(i=n,n=null):e.$ctx=n,(s=r[t])?(this.off(t,e),i?s.unshift(e):s.push(e)):s=[e],r[t]=s),this}once(t,e,n,i){return t&&e&&(e.$once=!0,this.on(t,e,n,i)),this}off(t,e){let n,i,s=arguments.length,r=this.$evt;return 0===s?this.$evt={}:1===s?delete r[t]:(n=(i=r[t])?i.indexOf(e):-1)>-1&&(i.splice(n,1),i.length||delete r[t]),this}emit(t,e){let n,i,s,r=this.$evt[t];if(r&&(s=r.length))for(r=r.slice(),n=0;n<s;n++)"stopEmit"===(i=r[n]).apply(i.$ctx,e)&&(n=s),i.$once&&(this.off(t,i),delete i.$once);return this}triggers(t,e){let n,i=arguments.length,s=this.$evt;return i?!!(n=s[t])&&(!(i>1)||n.indexOf(e)>-1):!!Object.getOwnPropertyNames(s).length}}
 ```
