@@ -20,7 +20,8 @@
     "test": "mocha -r ts-node/register -r jsdom-global/register test/**/*.spec.ts",
     "test:wdio": "wdio wdio.conf.js",
     "test:cov": "nyc npm test",
-    "all": "npm run build && npm run test:cov && npm run test:wdio && npm run readme"
+    "all": "npm run build && npm run test:cov && npm run test:wdio && npm run readme",
+    "patch": "npm login && npm run all && npm version patch && npm publish"
   },
   "nyc": {
     "include": [
