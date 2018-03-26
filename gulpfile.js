@@ -210,7 +210,7 @@ function gen_readme() {
 
   // generate coverage table
   let cov = require(path.resolve(__dirname, 'coverage/coverage-summary.json'))
-  let getCov = (type) => `${cov.total[type].pct} ( ${cov.total[type].covered}/${cov.total[type].total})`
+  let getCov = (type) => `${cov.total[type].pct}% (${cov.total[type].covered}/${cov.total[type].total})`
     covTable = [
       ['Type', 'Coverage'],
       ['Statements', getCov('statements')],

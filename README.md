@@ -25,10 +25,10 @@ So here's what I needed from event emitter and ended up implementing in this one
  
 Type | Coverage
 --- | ---
-Statements | 100 ( 130/130)
-Branches | 100 ( 84/84)
-Functions | 100 ( 18/18)
-Lines | 100 ( 126/126)
+Statements | 100% (130/130)
+Branches | 100% (84/84)
+Functions | 100% (18/18)
+Lines | 100% (126/126)
 
 #### `dist` directory size listing
 
