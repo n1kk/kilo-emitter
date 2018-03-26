@@ -10,14 +10,14 @@ So here's what I needed from event emitter and ended up implementing in this one
 * Chainalbe methods.
 * Instantiate with `new` as well as extend existing object.
 * Reliable listener removal (usually `once` were implemented as wrappers so you couldn't remove them by same listener reference).
-* Ability to remove all listeners for given event. See [`.off(event)`](#static-extendtarget)
-* Ability to remove all listeners for all events. See `.off()`
-* Priority listeners (added to the start of the queue instead of end). See `.on()`
-* Ability to pass context to the listener as this keyword. See `.on()`
-* Ability to stop propagation of current event, smth like `preventDefaults`. See `.emit()`
-* Ability to pass arguments together with event. See `.emit()`
-* Ability to check whether specific listener is subscribed for a specific event. See `.triggers()`
-* Ability to check whether emitter has any listeners subscribed for specified event or any listeners at all. See `.triggers()`
+* Ability to remove all listeners for given event. See [`.off(event)`](#offevent-listener)
+* Ability to remove all listeners for all events. See [`.off(event)`](#offevent-listener)
+* Priority listeners (added to the start of the queue instead of end). See [`.on()`](#onevent-listener-context-priority)
+* Ability to pass context to the listener as this keyword. See [`.on()`](#onevent-listener-context-priority)
+* Ability to stop propagation of current event, smth like `preventDefaults`. See [`.emit()`](#emitevent-args)
+* Ability to pass arguments together with event. See [`.emit()`](#emitevent-args)
+* Ability to check whether specific listener is subscribed for a specific event. See [`.triggers()`](#triggersevent-listener)
+* Ability to check whether emitter has any listeners subscribed for specified event or any listeners at all. See [`.triggers()`](#triggersevent-listener)
 * Available under diferent formats (ES3, ES5, ES6, Browser, inline)
 
 ## Stats
