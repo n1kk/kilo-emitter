@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const pkg = require('./package.json');
 
 const ts = require('gulp-typescript');
 
@@ -12,12 +13,10 @@ const rename = require('gulp-rename');
 const replace = require('gulp-replace');
 const uglify_es = require('gulp-uglify-es').default;
 const del = require('del');
-const typedoc = require("gulp-typedoc");
 
 const prettySize = require('prettysize');
 const gzipSize = require('gzip-size');
 const table = require('table');
-const stripIndent = require('strip-indent');
 
 const inFile = 'src/Emitter.ts'
 const outDir = 'dist'
@@ -44,6 +43,8 @@ function build_browser() {
     .pipe(replace(/export class/g, 'class'))
 		.pipe(replace(/export interface/g, 'interface'))
 		.pipe(replace(/export default\s/g, ''))
+
+    .pipe(save('precompiled'))
 
     .pipe(ts(Object.assign(tsConfig, {
 			target: "es3",
@@ -75,6 +76,25 @@ function build_browser() {
 		.pipe(uglify())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest(outDir))
+
+    .pipe(save.restore('precompiled'))
+
+    .pipe(ts(Object.assign(tsConfig, {
+      target: "es2015",
+      module: "none",
+      declaration: false,
+      // TODO: source maps doesn't match real file path, looks for ts file in dist dir
+      // https://github.com/istanbuljs/nyc/issues/359
+    })))
+
+    .pipe(rename({suffix: '.es6.inlined'}))
+    .pipe(sourcemaps.write('.', {destPath: outDir}))
+    .pipe(gulp.dest(outDir))
+    .pipe(filter(['**/*.js']))
+    .pipe(uglify_es())
+    .pipe(rename({suffix: '.min'}))
+    .pipe(gulp.dest(outDir))
+
 }
 
 function build_umd() {
@@ -172,42 +192,15 @@ function size_report(cb) {
     console.log(tbl)
 
     fs.writeFileSync(path.resolve(__dirname, 'logs/sizereporttable.txt'), tbl, 'utf8')
-  }, 100)
+  }, 200)
 
   // finish task and let gulp print it's size_report
   cb && cb()
 }
 
-function gen_docs() {
- /* fs.ensureDirSync(path.resolve(__dirname, 'logs'))
-  let readme = fs.readFileSync(path.resolve(__dirname, 'readme.template.md'), 'utf8')
-  readme = readme.match(/^##(.+?)##\s/s)
-  fs.writeFileSync(path.resolve(__dirname, 'logs/docs_readme.md'), readme[0], 'utf8')*/
-
-  return gulp
-    .src([inFile])
-    .pipe(typedoc(Object.assign(tsConfig, {
-      // TypeScript options (see typescript docs)
-      target: "ES5",
-      module: "commonjs",
-      declaration: false,
-
-      // Output options (see typedoc docs)
-      out: "./docs",
-      json: "./docs/docs.json",
-      // readme: "./logs/docs_readme.md",
-      readme: 'none',
-
-      // TypeDoc options (see typedoc docs)
-      name: "kilo-emitter",
-      theme: "minimal",
-      //plugins: ["my", "plugins"],
-      ignoreCompilerErrors: false,
-      version: true,
-    })))
-}
-
 function gen_readme() {
+  let repl = (a, b) => g = g.pipe(replace(a, b))
+
   let g = gulp.src(['readme.template.md'])
     , tableToMD = (tbl) => {
     tbl.splice(1,0,tbl[0].map(_=>'---'))
@@ -225,60 +218,32 @@ function gen_readme() {
       ['Functions', getCov('functions')],
       ['Lines', getCov('lines')],
     ]
-  g = g.pipe(replace("${CoverageTable}", tableToMD(covTable)))
+  repl("${CoverageTable}", tableToMD(covTable))
 
   // generate compiled size table
   let size = require(path.resolve(__dirname, 'logs/sizereport.json'))
   covTable = [['Name', 'Bytes', 'Gzip', '%']]
     .concat(size.map(f => [f.name, f.size, f.gzip, f.pct]))
-  g = g.pipe(replace("${CompiledSizeTable}", tableToMD(covTable)))
+  repl("${CompiledSizeTable}", tableToMD(covTable))
 
-  // insert inlined minified version
-  let inlined = path.resolve(__dirname, 'dist/Emitter.es3.inlined.min.js')
-  g = g.pipe(replace("${InlineCompiledCode}", fs.readFileSync(inlined, 'utf8')))
-  g = g.pipe(replace("${InlineCompiledSize}", size.filter(f => f.name === 'Emitter.es3.inlined.min.js')[0].size))
+  // insert inlined_es3 minified version
+  repl(/\${PackageName}/g, pkg.name)
+  repl(/\${PackageBrowserFile}/g, pkg.browser)
 
-  // generate API
-  let api = require(path.resolve(__dirname, 'docs/docs.json'))
-    , module = api.children.filter(ch => ch.name === "\"Emitter\"")[0]
-    , emitter = module.children.filter(ch => ch.name === "Emitter")[0]
-    , methods = emitter.children.filter(ch => ch.name !== "constructor" && !ch.flags.isPrivate)
+  // insert inlined_es3 minified version
+  let inlined_es3 = 'Emitter.es3.inlined.min.js'
+  repl("${InlineES3CompiledCode}", fs.readFileSync(path.resolve(__dirname, 'dist', inlined_es3), 'utf8'))
+  repl("${InlineES3CompiledSize}", size.filter(f => f.name === inlined_es3)[0].size)
 
-  g = g.pipe(replace("${UsageNode}", remNL(emitter.comment.tags.filter(t => t.tag === "example_node")[0].text)))
-  g = g.pipe(replace("${UsageES6}", remNL(emitter.comment.tags.filter(t => t.tag === "example_es6")[0].text)))
-  g = g.pipe(replace("${UsageBrowser}", remNL(emitter.comment.tags.filter(t => t.tag === "example_browser")[0].text)))
-
-  let apimd = methods.map(ch => {
-    let sig = ch.signatures[0]
-      , example = (_=>_[0] ? remNL(_[0].text) : '')(sig.comment.tags.filter(t => t.tag === 'example'))
-      , params = sig.parameters.map(p=>p.name).join(', ')
-      , paramsExt = sig.parameters.map(p => `${p.name}${p.flags.isOptional?'?':''}:${p.type.name}`).join(', ')
-      , paramsInfo = sig.parameters.map(p => `// @param\\t${p.name} : ${p.comment.text}`).join('\\n')
-    return stripIndent(`
-### ${ch.flags.isStatic ? '`static`' : ''} ${sig.name}(${params})
-${sig.comment.shortText}
-##### Signature:
-\`\`\`typescript
-function ${sig.name}(${paramsExt}): ${sig.type.name}
-${paramsInfo}
-// @returns\t${sig.comment.returns}
-\`\`\`
-##### Examples
-${example}
-`)
-  }).join('\n\n')
-
-  g = g.pipe(replace("${API}", apimd))
-
+  let inlined_es6 = 'Emitter.es6.inlined.min.js'
+  repl("${InlineES6CompiledCode}", fs.readFileSync(path.resolve(__dirname, 'dist', inlined_es6), 'utf8'))
+  repl("${InlineES6CompiledSize}", size.filter(f => f.name === inlined_es6)[0].size)
 
   // save as README.md
   return g.pipe(rename({basename: 'README'})).pipe(gulp.dest('./'))
 }
 
-
-
-gulp.task('gen_docs', gen_docs);
-gulp.task('gen_readme', gen_readme);
+gulp.task('readme', gen_readme);
 
 let dist = gulp.series(
   clean_dist,
@@ -291,16 +256,9 @@ let dist = gulp.series(
 );
 gulp.task('dist', dist);
 
-let docs = gulp.series(
-  clean_docs,
-  gen_docs,
-  gen_readme,
-);
-gulp.task('docs', docs);
-
 let all = gulp.series(
   dist,
-  docs,
+  'readme',
 );
 gulp.task('all', all);
 
