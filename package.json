@@ -16,7 +16,8 @@
     "triggers"
   ],
   "files": [
-    "dist/*.*"
+    "dist/*.*",
+    "README.md"
   ],
   "homepage": "https://github.com/n1kk/kilo-emitter",
   "repository": {
