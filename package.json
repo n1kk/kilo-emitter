@@ -2,6 +2,10 @@
   "name": "kilo-emitter",
   "version": "0.1.1",
   "description": "A sub 1Kb event emitter class with broader functionality.",
+  "keywords" : ["event emitter", "event", "emitter", "compact", "1k", "pub/sub", "publish", "subscribe", "once", "off", "triggers"],
+  "files" : [
+    "dist/*.*"
+  ],
   "homepage": "https://github.com/n1kk/kilo-emitter",
   "repository": {
     "type": "git",

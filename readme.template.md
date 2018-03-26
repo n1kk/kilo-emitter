@@ -18,7 +18,7 @@ So here's what I needed from event emitter and ended up implementing in this one
 * Ability to pass arguments together with event. See [`.emit()`](#emitevent-args)
 * Ability to check whether specific listener is subscribed for a specific event. See [`.triggers()`](#triggersevent-listener)
 * Ability to check whether emitter has any listeners subscribed for specified event or any listeners at all. See [`.triggers()`](#triggersevent-listener)
-* Available under diferent formats (ES3, ES5, ES6, Browser, inline)
+* Available under diferent formats (ES3, ES5, ES6, Browser, inlined)
 
 ## Stats
 #### Coverage
@@ -49,7 +49,7 @@ ES3, __${InlineES3CompiledSize}__ Bytes
 ${InlineES3CompiledCode}
 ```
 ES6, __${InlineES6CompiledSize}__ Bytes
-```javascript
+```javascript 1.6
 ${InlineES6CompiledCode}
 ```
 
