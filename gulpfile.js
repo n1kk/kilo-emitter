@@ -201,7 +201,7 @@ function size_report(cb) {
 function gen_readme() {
   let repl = (a, b) => g = g.pipe(replace(a, b))
 
-  let g = gulp.src(['readme.template.md'])
+  let g = gulp.src(['template.md'])
     , tableToMD = (tbl) => {
     tbl.splice(1,0,tbl[0].map(_=>'---'))
     return tbl.map(row => row.join(' | ')).join('\n')
