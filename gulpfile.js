@@ -50,7 +50,7 @@ function build_browser() {
 			target: "es3",
 			module: "none",
 			declaration: false,
-      // TODO: source maps doesn't match real file path, looks for ts file in dist dir
+      // TODO: source map doesn't match real file path, looks for ts file in dist dir
       // https://github.com/istanbuljs/nyc/issues/359
 		})))
 
@@ -83,8 +83,6 @@ function build_browser() {
       target: "es2015",
       module: "none",
       declaration: false,
-      // TODO: source maps doesn't match real file path, looks for ts file in dist dir
-      // https://github.com/istanbuljs/nyc/issues/359
     })))
 
     .pipe(rename({suffix: '.es6.inlined'}))
