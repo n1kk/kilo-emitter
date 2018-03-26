@@ -49,7 +49,7 @@ ES3, __${InlineES3CompiledSize}__ Bytes
 ${InlineES3CompiledCode}
 ```
 ES6, __${InlineES6CompiledSize}__ Bytes
-```javascript 1.6
+```typescript
 ${InlineES6CompiledCode}
 ```
 
