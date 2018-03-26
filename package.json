@@ -1,7 +1,15 @@
 {
   "name": "kilo-emitter",
   "version": "0.1.0",
-  "description": "",
+  "description": "A sub 1Kb event emitter class with broader functionality.",
+  "homepage": "https://github.com/n1kk/kilo-emitter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1kk/kilo-emitter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/n1kk/kilo-emitter/issues"
+  },
   "main": "dist/Emitter.js",
   "module": "dist/Emitter.es6.js",
   "browser": "dist/Emitter.es3.browser.js",
