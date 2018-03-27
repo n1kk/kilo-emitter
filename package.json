@@ -1,6 +1,6 @@
 {
   "name": "kilo-emitter",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A sub 1Kb event emitter class with broader functionality.",
   "keywords": [
     "event emitter",
