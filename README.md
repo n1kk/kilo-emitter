@@ -57,7 +57,7 @@ yarn add kilo-emitter
 ```
 ##### Browser tag
 ```html
-<script src="https://unpkg.com/kilo-emitter/dist/Emitter.es3.browser.js"></script>
+<script src="https://unpkg.com/kilo-emitter/dist/Emitter.es3.browser.min.js"></script>
 ```
 ##### Inlined
 Or you can just grab this compiled inlined version and copy-paste it in your code.
@@ -100,7 +100,7 @@ console.log(myEmitter.triggers()) // false
 
 ##### Browser
 ```html
-<script src="https://unpkg.com/kilo-emitter/dist/Emitter.es3.browser.js"></script>
+<script src="https://unpkg.com/kilo-emitter/dist/Emitter.es3.browser.min.js"></script>
 
 <script>
 var myEmitter = new Emitter()

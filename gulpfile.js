@@ -226,7 +226,7 @@ function gen_readme() {
 
   // insert inlined_es3 minified version
   repl(/\${PackageName}/g, pkg.name)
-  repl(/\${PackageBrowserFile}/g, pkg.browser)
+  repl(/\${PackageBrowserFile}/g, pkg.browser.replace('.js', '.min.js'))
 
   // insert inlined_es3 minified version
   let inlined_es3 = 'Emitter.es3.inlined.min.js'
