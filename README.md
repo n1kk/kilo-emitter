@@ -25,10 +25,10 @@ So here's what I needed from event emitter and ended up implementing in this one
  
 Type | Coverage
 --- | ---
-Statements | 100% (130/130)
-Branches | 100% (84/84)
-Functions | 100% (18/18)
-Lines | 100% (126/126)
+Statements | 100% (66/66)
+Branches | 100% (42/42)
+Functions | 100% (9/9)
+Lines | 100% (63/63)
 
 #### `dist` directory size listing
 
@@ -43,7 +43,7 @@ Emitter.es3.umd.min.js | 1276 | 607 | 47%
 Emitter.es6.inlined.js | 3069 | 789 | 25%
 Emitter.es6.inlined.min.js | 883 | 481 | 54%
 Emitter.es6.js | 3076 | 794 | 25%
-Emitter.es6.min.js | 899 | 493 | 54%
+Emitter.es6.min.js | 898 | 492 | 54%
 Emitter.js | 3161 | 843 | 26%
 Emitter.min.js | 975 | 535 | 54%
 
